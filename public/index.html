@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Sistema de gestión de seguros de responsabilidad civil vehicular"
+    />
+    <title>Sistema RCV — Iniciar Sesión</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>"
+    />
+  </head>
+  <body>
+    <div class="auth-page">
+      <div class="auth-container">
+        <div class="auth-card">
+          <div class="auth-logo">
+            <div class="logo-icon" id="loginLogoIcon">🛡️</div>
+            <h1>Sistema RCV</h1>
+            <p>Gestión de Seguros de Responsabilidad Civil</p>
+          </div>
+
+          <div id="authMessage"></div>
+
+          <div class="auth-tabs">
+            <button
+              class="auth-tab active"
+              data-tab="login"
+              onclick="switchTab('login')"
+            >
+              Iniciar Sesión
+            </button>
+            <button
+              class="auth-tab"
+              data-tab="register"
+              onclick="switchTab('register')"
+            >
+              Registrarse
+            </button>
+          </div>
+
+          <!-- Login Form -->
+          <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+              <label for="loginUser">Usuario</label>
+              <input
+                type="text"
+                id="loginUser"
+                class="form-control"
+                placeholder="Ingrese su usuario"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="loginPass">Contraseña</label>
+              <input
+                type="password"
+                id="loginPass"
+                class="form-control"
+                placeholder="Ingrese su contraseña"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              class="btn btn-primary btn-block"
+              id="loginBtn"
+            >
+              Iniciar Sesión
+            </button>
+          </form>
+
+          <!-- Register Form -->
+          <form
+            id="registerForm"
+            style="display: none"
+            onsubmit="handleRegister(event)"
+          >
+            <div class="form-group">
+              <label for="regUser">Usuario</label>
+              <input
+                type="text"
+                id="regUser"
+                class="form-control"
+                placeholder="Elija un nombre de usuario"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="regEmail">Email</label>
+              <input
+                type="email"
+                id="regEmail"
+                class="form-control"
+                placeholder="correo@ejemplo.com"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="regPass">Contraseña</label>
+              <input
+                type="password"
+                id="regPass"
+                class="form-control"
+                placeholder="Mínimo 6 caracteres"
+                required
+                minlength="6"
+              />
+            </div>
+            <div class="form-group">
+              <label for="regPassConfirm">Confirmar Contraseña</label>
+              <input
+                type="password"
+                id="regPassConfirm"
+                class="form-control"
+                placeholder="Repita la contraseña"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="regBtn">
+              Crear Cuenta
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Apply logo if available
+      const logoPath = 'img/logo.png';
+      const loginIcon = document.getElementById('loginLogoIcon');
+      if (loginIcon) {
+        const img = new Image();
+        img.onload = function() {
+          loginIcon.innerHTML = `<img src="${logoPath}" alt="Logo" style="height:50px;width:auto;object-fit:contain">`;
+        };
+        img.src = logoPath;
+      }
+    </script>
+    <script src="/js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Panel de administración — Sistema RCV">
+  <title>Dashboard — Sistema RCV</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+</head>
+<body>
+  <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-icon" id="sidebarLogoIcon">🛡️</div>
+          <div class="brand-text">
+            <h2>Sistema RCV</h2>
+            <span>Panel de Control</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Principal</div>
+          <button class="nav-item active" data-section="dashboard" onclick="navigateTo('dashboard')">
+            <span class="nav-icon">📊</span> Dashboard
+          </button>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Gestión</div>
+          <button class="nav-item" data-section="clients" onclick="navigateTo('clients')">
+            <span class="nav-icon">👥</span> Clientes
+          </button>
+          <button class="nav-item" data-section="policies" onclick="navigateTo('policies')">
+            <span class="nav-icon">📋</span> Pólizas
+          </button>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Configuración</div>
+          <button class="nav-item" data-section="coverages" onclick="navigateTo('coverages')">
+            <span class="nav-icon">🛡️</span> Coberturas
+          </button>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-title">Administración</div>
+          <button class="nav-item" data-section="users" onclick="navigateTo('users')">
+            <span class="nav-icon">⚙️</span> Usuarios
+          </button>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">A</div>
+          <div class="user-details">
+            <div class="name" id="userName">Admin</div>
+            <div class="role" id="userRole">admin</div>
+          </div>
+          <button class="btn-logout" onclick="logout()" title="Cerrar Sesión">⏻</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- ═══════════════════ DASHBOARD SECTION ═══════════════════ -->
+      <section class="content-section active" id="section-dashboard">
+        <div class="page-header">
+          <div>
+            <h1>Dashboard</h1>
+            <p>Resumen general del sistema</p>
+          </div>
+        </div>
+        <div class="page-body">
+          <div class="stats-grid" id="statsGrid">
+            <div class="stat-card accent">
+              <div class="stat-icon">👥</div>
+              <div class="stat-value" id="statClients">0</div>
+              <div class="stat-label">Clientes Registrados</div>
+            </div>
+            <div class="stat-card success">
+              <div class="stat-icon">✅</div>
+              <div class="stat-value" id="statActivePolicies">0</div>
+              <div class="stat-label">Pólizas Activas</div>
+            </div>
+            <div class="stat-card warning">
+              <div class="stat-icon">⏳</div>
+              <div class="stat-value" id="statPendingPolicies">0</div>
+              <div class="stat-label">Pólizas Pendientes</div>
+            </div>
+            <div class="stat-card info">
+              <div class="stat-icon">💰</div>
+              <div class="stat-value" id="statTotalPrimas">$0</div>
+              <div class="stat-label">Primas Activas</div>
+            </div>
+            <div class="stat-card danger">
+              <div class="stat-icon">⚠️</div>
+              <div class="stat-value" id="statExpiredPolicies">0</div>
+              <div class="stat-label">Pólizas Vencidas</div>
+            </div>
+            <div class="stat-card accent">
+              <div class="stat-icon">🔒</div>
+              <div class="stat-value" id="statTotalMontos">$0</div>
+              <div class="stat-label">Cobertura Total</div>
+            </div>
+          </div>
+
+          <div class="content-grid">
+            <!-- Recent Clients -->
+            <div class="section-card">
+              <div class="section-card-header">
+                <h3>🆕 Clientes Recientes</h3>
+                <button class="btn btn-sm btn-secondary" onclick="navigateTo('clients')">Ver todos</button>
+              </div>
+              <div class="section-card-body" id="recentClientsList">
+                <div class="table-empty"><div class="empty-icon">📭</div><p>No hay clientes registrados</p></div>
+              </div>
+            </div>
+
+            <!-- Recent Policies -->
+            <div class="section-card">
+              <div class="section-card-header">
+                <h3>📋 Pólizas Recientes</h3>
+                <button class="btn btn-sm btn-secondary" onclick="navigateTo('policies')">Ver todas</button>
+              </div>
+              <div class="section-card-body" id="recentPoliciesList">
+                <div class="table-empty"><div class="empty-icon">📭</div><p>No hay pólizas creadas</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════ CLIENTS SECTION ═══════════════════ -->
+      <section class="content-section" id="section-clients">
+        <div class="page-header">
+          <div>
+            <h1>Clientes</h1>
+            <p>Gestión de base de datos de clientes</p>
+          </div>
+          <button class="btn btn-primary" onclick="openClientModal()">+ Nuevo Cliente</button>
+        </div>
+        <div class="page-body">
+          <div class="table-container">
+            <div class="table-header">
+              <h3>Lista de Clientes</h3>
+              <div class="table-actions">
+                <div class="search-box">
+                  <input type="text" placeholder="Buscar por cédula, nombre..." id="clientSearch" oninput="debounceSearch(loadClients, 'clientSearch')">
+                </div>
+              </div>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Cédula</th>
+                  <th>Nombre</th>
+                  <th>Teléfono</th>
+                  <th>Email</th>
+                  <th>Ciudad</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="clientsTableBody">
+                <tr><td colspan="6"><div class="table-empty"><div class="empty-icon">👥</div><p>No hay clientes</p></div></td></tr>
+              </tbody>
+            </table>
+            <div class="table-footer">
+              <span id="clientsCount">0 clientes</span>
+              <div class="pagination" id="clientsPagination"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════ POLICIES SECTION ═══════════════════ -->
+      <section class="content-section" id="section-policies">
+        <div class="page-header">
+          <div>
+            <h1>Pólizas</h1>
+            <p>Gestión de pólizas de seguro RCV</p>
+          </div>
+          <button class="btn btn-primary" onclick="openPolicyModal()">+ Nueva Póliza</button>
+        </div>
+        <div class="page-body">
+          <div class="table-container">
+            <div class="table-header">
+              <h3>Lista de Pólizas</h3>
+              <div class="table-actions">
+                <div class="filter-bar">
+                  <select id="policyStatusFilter" onchange="loadPolicies()">
+                    <option value="">Todos los estados</option>
+                    <option value="activa">Activas</option>
+                    <option value="pendiente">Pendientes</option>
+                    <option value="vencida">Vencidas</option>
+                    <option value="cancelada">Canceladas</option>
+                  </select>
+                </div>
+                <div class="search-box">
+                  <input type="text" placeholder="Buscar póliza, placa..." id="policySearch" oninput="debounceSearch(loadPolicies, 'policySearch')">
+                </div>
+              </div>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Nº Póliza</th>
+                  <th>Cliente</th>
+                  <th>Vehículo</th>
+                  <th>Placa</th>
+                  <th>Cobertura</th>
+                  <th>Prima</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="policiesTableBody">
+                <tr><td colspan="8"><div class="table-empty"><div class="empty-icon">📋</div><p>No hay pólizas</p></div></td></tr>
+              </tbody>
+            </table>
+            <div class="table-footer">
+              <span id="policiesCount">0 pólizas</span>
+              <div class="pagination" id="policiesPagination"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════ COVERAGES SECTION ═══════════════════ -->
+      <section class="content-section" id="section-coverages">
+        <div class="page-header">
+          <div>
+            <h1>Coberturas</h1>
+            <p>Gestión de tipos de cobertura y precios</p>
+          </div>
+          <button class="btn btn-primary" onclick="openCoverageModal()">+ Nueva Cobertura</button>
+        </div>
+        <div class="page-body">
+          <div class="table-container">
+            <div class="table-header">
+              <h3>Coberturas Disponibles</h3>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Prima Anual</th>
+                  <th>Monto Total</th>
+                  <th>Coberturas</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="coveragesTableBody">
+                <tr><td colspan="7"><div class="table-empty"><div class="empty-icon">🛡️</div><p>No hay coberturas configuradas</p></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════ USERS SECTION ═══════════════════ -->
+      <section class="content-section" id="section-users">
+        <div class="page-header">
+          <div>
+            <h1>Usuarios</h1>
+            <p>Gestión de cuentas de administrador</p>
+          </div>
+        </div>
+        <div class="page-body">
+          <div class="table-container">
+            <div class="table-header">
+              <h3>Usuarios del Sistema</h3>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Email</th>
+                  <th>Rol</th>
+                  <th>Estado</th>
+                  <th>Registrado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody">
+                <tr><td colspan="6"><div class="table-empty"><div class="empty-icon">⚙️</div><p>No hay usuarios</p></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ═══════════════════ MODALS ═══════════════════ -->
+
+  <!-- Client Modal -->
+  <div class="modal-overlay" id="clientModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="clientModalTitle">Nuevo Cliente</h3>
+        <button class="modal-close" onclick="closeModal('clientModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="clientForm" onsubmit="saveClient(event)">
+          <input type="hidden" id="clientId">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="clientCedula">Cédula *</label>
+              <input type="text" id="clientCedula" class="form-control" placeholder="V-12345678" required>
+            </div>
+            <div class="form-group">
+              <label for="clientFechaNac">Fecha de Nacimiento</label>
+              <input type="date" id="clientFechaNac" class="form-control">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="clientNombre">Nombre *</label>
+              <input type="text" id="clientNombre" class="form-control" placeholder="Nombre" required>
+            </div>
+            <div class="form-group">
+              <label for="clientApellido">Apellido *</label>
+              <input type="text" id="clientApellido" class="form-control" placeholder="Apellido" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="clientTelefono">Teléfono</label>
+              <input type="text" id="clientTelefono" class="form-control" placeholder="0412-1234567">
+            </div>
+            <div class="form-group">
+              <label for="clientEmail">Email</label>
+              <input type="email" id="clientEmail" class="form-control" placeholder="correo@ejemplo.com">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="clientDireccion">Dirección</label>
+            <input type="text" id="clientDireccion" class="form-control" placeholder="Dirección completa">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="clientCiudad">Ciudad</label>
+              <input type="text" id="clientCiudad" class="form-control" placeholder="Ciudad">
+            </div>
+            <div class="form-group">
+              <label for="clientEstado">Estado</label>
+              <input type="text" id="clientEstado" class="form-control" placeholder="Estado o región">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('clientModal')">Cancelar</button>
+        <button class="btn btn-primary" onclick="document.getElementById('clientForm').requestSubmit()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Policy Modal -->
+  <div class="modal-overlay" id="policyModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="policyModalTitle">Nueva Póliza</h3>
+        <button class="modal-close" onclick="closeModal('policyModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="policyForm" onsubmit="savePolicy(event)">
+          <input type="hidden" id="policyId">
+          <div class="form-group">
+            <label for="policyClient">Cliente *</label>
+            <select id="policyClient" class="form-control" required>
+              <option value="">Seleccione un cliente</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="policyTipoVehiculo">Tipo de Vehículo *</label>
+              <select id="policyTipoVehiculo" class="form-control" required>
+                <option value="">Seleccione</option>
+                <option value="automovil">Automóvil</option>
+                <option value="camioneta">Camioneta</option>
+                <option value="moto">Moto</option>
+                <option value="camion">Camión</option>
+                <option value="bus">Bus</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="policyPlaca">Placa *</label>
+              <input type="text" id="policyPlaca" class="form-control" placeholder="ABC123" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="policyMarca">Marca *</label>
+              <input type="text" id="policyMarca" class="form-control" placeholder="Toyota, Chevrolet..." required>
+            </div>
+            <div class="form-group">
+              <label for="policyModelo">Modelo *</label>
+              <input type="text" id="policyModelo" class="form-control" placeholder="Corolla, Aveo..." required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="policyAnio">Año *</label>
+              <input type="number" id="policyAnio" class="form-control" placeholder="2024" min="1990" max="2030" required>
+            </div>
+            <div class="form-group">
+              <label for="policyColor">Color</label>
+              <input type="text" id="policyColor" class="form-control" placeholder="Blanco, Negro...">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="policySerial">Serial de Carrocería</label>
+            <input type="text" id="policySerial" class="form-control" placeholder="Serial del vehículo">
+          </div>
+          <div class="form-group">
+            <label for="policyCobertura">Cobertura *</label>
+            <select id="policyCobertura" class="form-control" required>
+              <option value="">Seleccione cobertura</option>
+              <!-- Dynamic coverages loaded from API -->
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="policyFechaInicio">Fecha Inicio *</label>
+              <input type="date" id="policyFechaInicio" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="policyFechaFin">Fecha Fin *</label>
+              <input type="date" id="policyFechaFin" class="form-control" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="policyNotas">Notas</label>
+            <textarea id="policyNotas" class="form-control" placeholder="Observaciones adicionales..."></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('policyModal')">Cancelar</button>
+        <button class="btn btn-primary" onclick="document.getElementById('policyForm').requestSubmit()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Edit Modal -->
+  <div class="modal-overlay" id="userModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Editar Usuario</h3>
+        <button class="modal-close" onclick="closeModal('userModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="userForm" onsubmit="saveUser(event)">
+          <input type="hidden" id="userId">
+          <div class="form-group">
+            <label for="userUsername">Usuario</label>
+            <input type="text" id="userUsername" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="userEmail">Email</label>
+            <input type="email" id="userEmailField" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="userPassword">Nueva Contraseña <small style="color:var(--text-muted)">(dejar vacío para no cambiar)</small></label>
+            <input type="password" id="userPassword" class="form-control" placeholder="Nueva contraseña">
+          </div>
+          <div class="form-group">
+            <label for="userRoleField">Rol</label>
+            <select id="userRoleField" class="form-control">
+              <option value="admin">Admin</option>
+              <option value="superadmin">Super Admin</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('userModal')">Cancelar</button>
+        <button class="btn btn-primary" onclick="document.getElementById('userForm').requestSubmit()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Dialog -->
+  <div class="confirm-overlay" id="confirmDialog">
+    <div class="confirm-dialog">
+      <div class="confirm-icon">⚠️</div>
+      <h3 id="confirmTitle">¿Está seguro?</h3>
+      <p id="confirmMessage">Esta acción no se puede deshacer.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-secondary" onclick="closeConfirm()">Cancelar</button>
+        <button class="btn btn-danger" id="confirmBtn" onclick="">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coverage Modal -->
+  <div class="modal-overlay" id="coverageModal">
+    <div class="modal" style="max-width:700px">
+      <div class="modal-header">
+        <h3 id="coverageModalTitle">Nueva Cobertura</h3>
+        <button class="modal-close" onclick="closeModal('coverageModal')">✕</button>
+      </div>
+      <div class="modal-body" style="max-height:70vh;overflow-y:auto">
+        <form id="coverageForm" onsubmit="saveCoverage(event)">
+          <input type="hidden" id="coverageId">
+          <div class="form-group">
+            <label for="coverageNombre">Nombre de Cobertura *</label>
+            <input type="text" id="coverageNombre" class="form-control" placeholder="Ej: Básica, Premium, Gold..." required>
+          </div>
+          <div class="form-group">
+            <label for="coverageDescripcion">Descripción</label>
+            <input type="text" id="coverageDescripcion" class="form-control" placeholder="Descripción breve de la cobertura">
+          </div>
+          <div class="form-group">
+            <label for="coveragePrima">💰 Prima Anual ($) *</label>
+            <input type="number" step="0.01" min="0" id="coveragePrima" class="form-control" value="0" required style="font-size:1.1rem;font-weight:700">
+          </div>
+          <div style="border-top:1px solid var(--border-color,#333);margin:1rem 0;padding-top:1rem">
+            <label style="font-size:0.75rem;font-weight:700;color:var(--accent,#6366f1);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;display:block">🛡️ Coberturas (Nombre y Cantidad a Asegurar)</label>
+            <div id="coverageItemsContainer"></div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('coverageModal')">Cancelar</button>
+        <button class="btn btn-primary" onclick="document.getElementById('coverageForm').requestSubmit()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/js/legal-config.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
