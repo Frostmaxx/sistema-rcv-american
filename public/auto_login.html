@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Auto Login - Sistema RCV</title>
+</head>
+<body>
+  <div style="padding:2rem;font-family:Arial,Helvetica,sans-serif">Redirigiendo a la póliza...</div>
+  <script>
+    // Token generado localmente (expira según configuración)
+    localStorage.setItem('rcv_token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc3MTUwODQ1MCwiZXhwIjoxNzcyMTEzMjUwfQ.KMB55n-Y2Puyw4XOqpMbo4j0fpcb6cshQo53Z11dHqM');
+    // Redirige a la vista de impresión para la póliza 4
+    window.location.replace('/print.html?id=4&format=carta');
+  </script>
+</body>
+</html>

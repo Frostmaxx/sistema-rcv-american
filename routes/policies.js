@@ -14,15 +14,16 @@ function generatePolicyNumber() {
   let seq = queryGet('SELECT value FROM sequences WHERE name = ?', [seqName]);
   if (!seq) {
     // Initialize from existing policies if any, otherwise start from 0
-    const maxRow = queryGet("SELECT MAX(CAST(SUBSTR(policy_number, -5) AS INTEGER)) as maxNum FROM policies WHERE policy_number LIKE ?", [`RCV-${year}-%`]);
+    // New format: <YEAR>-<8-digit counter> (e.g. 2026-00000001)
+    const maxRow = queryGet("SELECT MAX(CAST(SUBSTR(policy_number, -8) AS INTEGER)) as maxNum FROM policies WHERE policy_number LIKE ?", [`${year}-%`]);
     const startVal = maxRow && maxRow.maxNum ? maxRow.maxNum : 0;
     queryRun('INSERT INTO sequences (name, value) VALUES (?, ?)', [seqName, startVal]);
     seq = { value: startVal };
   }
-  
+
   const nextNum = seq.value + 1;
   queryRun('UPDATE sequences SET value = ? WHERE name = ?', [nextNum, seqName]);
-  return `RCV-${year}-${String(nextNum).padStart(5, '0')}`;
+  return `${year}-${String(nextNum).padStart(8, '0')}`;
 }
 
 // Dynamic coverage pricing from DB

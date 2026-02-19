@@ -26,6 +26,7 @@
       background: #f1f5f9;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
+      font-size: 0.8rem; /* reducir texto general */
     }
 
     /* ── Screen Controls ── */
@@ -115,76 +116,98 @@
       position: relative;
     }
 
+    /* Header redesigned to match recibo layout */
     .carta-header {
-      background: linear-gradient(135deg, #1a1a2e 0%, #2d2b55 100%);
-      color: white;
-      padding: 1.8rem 2.2rem;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .carta-header::after {
-      content: '';
-      position: absolute;
-      right: -60px;
-      top: -60px;
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .carta-brand {
-      display: flex;
-      align-items: center;
+      padding: 1rem 1.2rem;
+      background: transparent;
+      color: #111827;
+      border-bottom: 1px solid var(--border);
       gap: 1rem;
-      z-index: 1;
     }
 
-    .carta-brand-icon {
-      width: auto;
-      height: auto;
-      background: none;
-      border-radius: 0;
+    .carta-header .left, .carta-header .center, .carta-header .right {
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
-      font-size: 1.6rem;
+      gap: 0.15rem;
     }
 
-    .carta-brand h1 {
-      font-size: 1.5rem;
+    .carta-header .left { width: 18%; align-items: flex-start; }
+    .carta-header .center { width: 58%; align-items: center; text-align: center; }
+    .carta-header .right { width: 24%; align-items: flex-end; text-align: right; }
+
+    .carta-brand-icon { font-size: 1.6rem; }
+
+    .carta-company-name {
+      font-size: 1.05rem;
       font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-
-    .carta-brand p {
-      font-size: 0.75rem;
-      opacity: 0.7;
-      margin-top: 0.15rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    .carta-header-right {
-      text-align: right;
-      z-index: 1;
-    }
-
-    .carta-header-right .policy-num {
-      font-size: 1.1rem;
-      font-weight: 700;
       letter-spacing: 0.02em;
     }
 
-    .carta-header-right .policy-date {
-      font-size: 0.7rem;
-      opacity: 0.6;
-      margin-top: 0.2rem;
+    .carta-company-meta {
+      font-size: 0.65rem;
+      color: var(--gray);
+      line-height: 1.1;
     }
+
+    .company-legal {
+      padding: 0.6rem 1.2rem;
+      text-align: center;
+      color: #111827;
+      background: transparent;
+      font-size: 0.8rem;
+      line-height: 1.1;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .carta-header .right .rif { font-weight: 700; font-size: 0.85rem; }
+
+    .document-title {
+      text-align: center;
+      padding: 0.9rem 1.2rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      margin-top: 0.6rem;
+    }
+
+    .document-subtitle {
+      text-align: center;
+      font-weight: 700;
+      margin-top: 0.15rem;
+      font-size: 0.9rem;
+      color: #111827;
+    }
+
+    .contract-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.6rem;
+      padding: 0.8rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .contract-item .label { font-size: 0.62rem; color: var(--gray); font-weight:700; text-transform:uppercase; }
+    .contract-item .value { font-size: 0.95rem; font-weight:800; }
+
+    .client-block, .vehicle-block { padding: 0.9rem 1.2rem; background: #fff; }
+    .section-heading { font-size: 0.7rem; font-weight:800; color:#111827; border-bottom: 1px solid var(--border); padding-bottom:0.4rem; margin-bottom:0.6rem; }
+
+    .client-grid, .vehicle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; }
+    .client-row { display:flex; justify-content:space-between; gap:0.6rem; }
+    .client-label { font-size:0.62rem; color:var(--gray); font-weight:700; text-transform:uppercase; }
+    .client-value { font-size:0.95rem; font-weight:600; }
+
+    .coverage-table { width:100%; border-collapse: collapse; margin-top:0.6rem; }
+    .coverage-table td, .coverage-table th { border: 1px solid var(--border); padding: 0.5rem 0.6rem; font-size:0.92rem; }
+    .coverage-table th { background:#fafafa; font-weight:800; text-align:left; }
+    .coverage-amount { text-align:right; width:120px; font-weight:700; }
+
+    .footer-stamps { display:flex; gap:1rem; align-items:center; justify-content:space-between; padding:1rem 1.2rem; }
+    .stamp { opacity:0.9; filter: grayscale(100%); }
 
     .carta-title-bar {
       background: var(--primary);
@@ -738,139 +761,121 @@
   <!-- ═══ CARTA (Letter) FORMAT ═══ -->
   <div class="print-carta" id="printCarta">
     <div class="carta-header">
-      <div class="carta-brand">
+      <div class="left">
         <div class="carta-brand-icon" id="cartaLogoIcon">🛡️</div>
+      </div>
+      <div class="center">
+        <!-- título principal moved below header to match recibo layout -->
+      </div>
+      <div class="right">
+        <div class="rif">RIF: —</div>
+      </div>
+    </div>
+
+    <!-- Bloque con nombre de la empresa y registro legal (debajo del header) -->
+    <div class="company-legal" id="companyLegalBlock">
+      <div class="carta-company-name">Seguro de Responsabilidad Civil de Vehículos</div>
+      <div class="carta-company-meta">Registrada en la Oficina del registro Público de los Municipios San Felipe, Independencia, Cocorote y Veroes del Estado Yaracuy — Inscrita y Autorizada para realizar actividad de Seguros</div>
+    </div>
+
+    <div class="document-title">PÓLIZA DE RESPONSABILIDAD CIVIL DE VEHÍCULOS</div>
+    <div class="document-subtitle">*** DE CONTADO ***</div>
+
+    <div class="contract-row">
+      <div class="contract-item">
+        <div class="label">Contrato Nro.</div>
+        <div class="value" id="cartaPolicyNum_small">—</div>
+      </div>
+      <div class="contract-item">
+        <div class="label">Vigencia Desde</div>
+        <div class="value" id="cartaFechaInicio">—</div>
+      </div>
+      <div class="contract-item">
+        <div class="label">Vigencia Hasta</div>
+        <div class="value" id="cartaFechaFin">—</div>
+      </div>
+      <div class="contract-item">
+        <div class="label">Fecha de Emisión</div>
+        <div class="value" id="cartaEmitido">—</div>
+      </div>
+    </div>
+
+    <div class="client-block">
+      <div class="section-heading">DATOS DEL CLIENTE</div>
+      <div class="client-grid">
         <div>
-          <p>Seguro de Responsabilidad Civil Vehicular</p>
+          <div class="client-label">Contratante</div>
+          <div class="client-value" id="cartaClientName">—</div>
         </div>
-      </div>
-      <div class="carta-header-right">
-        <div class="policy-num" id="cartaPolicyNum">—</div>
-        <div class="policy-date">Emitido: <span id="cartaEmitido">—</span></div>
+        <div>
+          <div class="client-label">C.I. / R.I.F.</div>
+          <div class="client-value" id="cartaClientCedula">—</div>
+        </div>
+        <div>
+          <div class="client-label">Dirección</div>
+          <div class="client-value" id="cartaClientDireccion">—</div>
+        </div>
+        <div>
+          <div class="client-label">Teléfono</div>
+          <div class="client-value" id="cartaClientTelefono">—</div>
+        </div>
       </div>
     </div>
 
-    <div class="carta-title-bar">
-      Comprobante de Póliza de Seguro
-    </div>
-
-    <div class="carta-body">
-      <!-- Status -->
-      <div style="text-align:right;margin-bottom:0.8rem">
-        <span class="carta-status" id="cartaEstado">—</span>
-      </div>
-      
-      <!-- QR Code for Carta (floats right) -->
-      <div class="carta-qr">
-        <img id="cartaQR" src="" alt="QR Code">
-        <div class="carta-qr-label">Escanea para verificar</div>
-      </div>
-
-      <!-- Client Info -->
-      <div class="carta-section">
-        <div class="carta-section-title">Datos del Asegurado</div>
-        <div class="carta-grid">
-          <div class="carta-field">
-            <span class="label">Nombre Completo</span>
-            <span class="value" id="cartaClientName">—</span>
-          </div>
-          <div class="carta-field">
-            <span class="label">Cédula de Identidad</span>
-            <span class="value" id="cartaClientCedula">—</span>
-          </div>
-          <div class="carta-field">
-            <span class="label">Teléfono</span>
-            <span class="value" id="cartaClientTelefono">—</span>
-          </div>
-          <div class="carta-field">
-            <span class="label">Email</span>
-            <span class="value" id="cartaClientEmail">—</span>
-          </div>
+    <div class="vehicle-block">
+      <div class="section-heading">DATOS DEL VEHÍCULO</div>
+      <div class="vehicle-grid">
+        <div>
+          <div class="client-label">Marca</div>
+          <div class="client-value" id="cartaVehMarca">—</div>
         </div>
-      </div>
-
-      <!-- Vehicle Info -->
-      <div class="carta-section">
-        <div class="carta-section-title">Datos del Vehículo</div>
-        <div class="carta-grid carta-grid-3">
-          <div class="carta-field">
-            <span class="label">Tipo</span>
-            <span class="value" id="cartaVehTipo">—</span>
-          </div>
-          <div class="carta-field">
-            <span class="label">Marca</span>
-            <span class="value" id="cartaVehMarca">—</span>
-          </div>
-          <div class="carta-field">
-            <span class="label">Modelo</span>
-            <span class="value" id="cartaVehModelo">—</span>
-          </div>
-          <div class="carta-field">
-            <span class="label">Año</span>
-            <span class="value" id="cartaVehAnio">—</span>
-          </div>
-          <div class="carta-field">
-            <span class="label">Placa</span>
-            <span class="value highlight" id="cartaVehPlaca">—</span>
-          </div>
-          <div class="carta-field">
-            <span class="label">Color</span>
-            <span class="value" id="cartaVehColor">—</span>
-          </div>
-          <div class="carta-field" style="grid-column: span 3">
-            <span class="label">Serial de Carrocería</span>
-            <span class="value" id="cartaVehSerial">—</span>
-          </div>
+        <div>
+          <div class="client-label">Modelo</div>
+          <div class="client-value" id="cartaVehModelo">—</div>
         </div>
-      </div>
-
-      <!-- Coverage -->
-      <div class="carta-section">
-        <div class="carta-section-title">Cobertura y Vigencia</div>
-        <div class="carta-coverage-box">
-          <div class="carta-coverage-item">
-            <div class="cov-label">Tipo de Cobertura</div>
-            <div class="cov-value" id="cartaCobertura">—</div>
-          </div>
-          <div class="carta-coverage-item">
-            <div class="cov-label">Prima Anual</div>
-            <div class="cov-value" id="cartaPrima">—</div>
-          </div>
-          <div class="carta-coverage-item">
-            <div class="cov-label">Monto de Cobertura</div>
-            <div class="cov-value" id="cartaMonto">—</div>
-          </div>
+        <div>
+          <div class="client-label">Clase</div>
+          <div class="client-value" id="cartaVehClase">—</div>
         </div>
-        <div class="carta-grid" style="margin-top:0.8rem">
-          <div class="carta-field">
-            <span class="label">Fecha de Inicio</span>
-            <span class="value" id="cartaFechaInicio">—</span>
-          </div>
-          <div class="carta-field">
-            <span class="label">Fecha de Vencimiento</span>
-            <span class="value" id="cartaFechaFin">—</span>
-          </div>
+        <div>
+          <div class="client-label">Color</div>
+          <div class="client-value" id="cartaVehColor">—</div>
         </div>
-      </div>
-
-      <!-- Notes -->
-      <div class="carta-section">
-        <div class="carta-section-title">Observaciones</div>
-        <div class="carta-notes" id="cartaNotas">Sin observaciones.</div>
+        <div>
+          <div class="client-label">Placa</div>
+          <div class="client-value" id="cartaVehPlaca">—</div>
+        </div>
+        <div>
+          <div class="client-label">Año</div>
+          <div class="client-value" id="cartaVehAnio">—</div>
+        </div>
+        <div style="grid-column: span 2;">
+          <div class="client-label">Serial Carrocería</div>
+          <div class="client-value" id="cartaVehSerial">—</div>
+        </div>
       </div>
     </div>
 
-    <!-- Signatures -->
-    <div class="carta-footer">
-      <div class="carta-signature">
-        <div class="sig-line">
-          <div class="sig-title">Firma del Asegurado</div>
-        </div>
+    <div class="client-block">
+      <div class="section-heading">GARANTÍAS CONTRATADAS</div>
+      <table class="coverage-table">
+        <thead>
+          <tr><th>Beneficio</th><th class="coverage-amount">Cobertura</th></tr>
+        </thead>
+        <tbody id="cartaCoverageBody">
+          <!-- Filas pobladas dinámicamente desde policy.garantias o valores por defecto -->
+        </tbody>
+      </table>
+      <div style="margin-top:0.6rem; text-align:right; font-weight:800;">PAGO TOTAL EUR <span id="cartaMonto">230.00</span></div>
+    </div>
+
+    <div class="footer-stamps">
+      <div class="sig-left">
+        <div class="sig-line" style="border-top:1px solid #cbd5e1; padding-top:0.6rem; width:220px; text-align:center;">FIRMA CONTRATANTE</div>
       </div>
-      <div class="carta-signature">
-        <div class="sig-line">
-          <div class="sig-title">Firma Autorizada — Sistema RCV</div>
-        </div>
+      <div style="text-align:center; color:#94a3b8;">&nbsp;</div>
+      <div class="sig-right">
+        <div class="sig-line" style="border-top:1px solid #cbd5e1; padding-top:0.6rem; width:220px; text-align:center;">FIRMA AUTORIZADA</div>
       </div>
     </div>
 
@@ -1019,6 +1024,11 @@
     }
 
     function populateData(p) {
+      function setText(id, value) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = value;
+      }
       // ─── Carta ───
       // ─── Logo ───
       if (typeof LOGO !== 'undefined' && LOGO) {
@@ -1026,32 +1036,37 @@
         document.getElementById('carnetLogoIcon').innerHTML = `<img src="${LOGO}" alt="Logo" style="height:25px;width:auto;object-fit:contain">`;
       }
 
-      document.getElementById('cartaPolicyNum').textContent = p.policy_number;
-      document.getElementById('cartaEmitido').textContent = formatDate(p.created_at);
+      setText('cartaPolicyNum', p.policy_number);
+      // llenar el campo 'Contrato Nro.' que está debajo del título
+      setText('cartaPolicyNum_small', p.policy_number);
+      setText('cartaEmitido', formatDate(p.created_at));
 
+      // status (optional element)
       const estadoEl = document.getElementById('cartaEstado');
-      estadoEl.textContent = statusLabels[p.estado] || p.estado;
-      estadoEl.className = 'carta-status ' + p.estado;
+      if (estadoEl) { estadoEl.textContent = statusLabels[p.estado] || p.estado; estadoEl.className = 'carta-status ' + p.estado; }
 
-      document.getElementById('cartaClientName').textContent = p.client_name || '—';
-      document.getElementById('cartaClientCedula').textContent = p.client_cedula || '—';
-      document.getElementById('cartaClientTelefono').textContent = p.client_telefono || '—';
-      document.getElementById('cartaClientEmail').textContent = p.client_email || '—';
+      setText('cartaClientName', p.client_name || '—');
+      setText('cartaClientCedula', p.client_cedula || '—');
+      setText('cartaClientTelefono', p.client_telefono || '—');
+      setText('cartaClientEmail', p.client_email || '—');
 
-      document.getElementById('cartaVehTipo').textContent = vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo;
-      document.getElementById('cartaVehMarca').textContent = p.marca;
-      document.getElementById('cartaVehModelo').textContent = p.modelo;
-      document.getElementById('cartaVehAnio').textContent = p.anio;
-      document.getElementById('cartaVehPlaca').textContent = p.placa;
-      document.getElementById('cartaVehColor').textContent = p.color || '—';
-      document.getElementById('cartaVehSerial').textContent = p.serial_carroceria || '—';
+      // Vehicle fields: older template used cartaVehTipo, new one uses cartaVehClase — set both when possible
+      setText('cartaVehTipo', vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo);
+      setText('cartaVehClase', vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo);
+      setText('cartaVehMarca', p.marca);
+      setText('cartaVehModelo', p.modelo);
+      setText('cartaVehAnio', p.anio);
+      setText('cartaVehPlaca', p.placa);
+      setText('cartaVehColor', p.color || '—');
+      setText('cartaVehSerial', p.serial_carroceria || '—');
 
-      document.getElementById('cartaCobertura').textContent = covLabels[p.cobertura] || p.cobertura;
-      document.getElementById('cartaPrima').textContent = formatCurrency(p.prima);
-      document.getElementById('cartaMonto').textContent = formatCurrency(p.monto);
-      document.getElementById('cartaFechaInicio').textContent = formatDate(p.fecha_inicio);
-      document.getElementById('cartaFechaFin').textContent = formatDate(p.fecha_fin);
-      document.getElementById('cartaNotas').textContent = p.notas || 'Sin observaciones.';
+      setText('cartaCobertura', covLabels[p.cobertura] || p.cobertura);
+      // Some fields may not exist in new layout; guard currency fields
+      const primaEl = document.getElementById('cartaPrima'); if (primaEl) primaEl.textContent = formatCurrency(p.prima);
+      const montoEl = document.getElementById('cartaMonto'); if (montoEl) montoEl.textContent = formatCurrency(p.monto);
+      setText('cartaFechaInicio', formatDate(p.fecha_inicio));
+      setText('cartaFechaFin', formatDate(p.fecha_fin));
+      setText('cartaNotas', p.notas || 'Sin observaciones.');
 
       // ─── Legal Footer (Carta) ───
       document.getElementById('cartaLegal').innerHTML = 
@@ -1091,6 +1106,60 @@
       document.getElementById('carnetLegal').innerHTML = 
         `${LEGAL.empresa} — RIF: ${LEGAL.rif} | ${LEGAL.telefono} — Preséntelo ante las autoridades de tránsito cuando sea requerido.`;
 
+      // ─── Coberturas (Carta) ───
+      (function populateCoverages() {
+        function formatEuro(n){
+          if (n === undefined || n === null || n === '') return '—';
+          return '€ ' + Number(n).toLocaleString('es-VE', { minimumFractionDigits: 2 });
+        }
+
+        const body = document.getElementById('cartaCoverageBody');
+        if (!body) return;
+        body.innerHTML = '';
+
+        if (p.garantias && Array.isArray(p.garantias) && p.garantias.length) {
+          p.garantias.forEach(g => {
+            const tr = document.createElement('tr');
+            const tdName = document.createElement('td');
+            tdName.textContent = g.beneficio || g.nombre || g.label || '—';
+            const tdAmt = document.createElement('td');
+            tdAmt.className = 'coverage-amount';
+            tdAmt.textContent = (g.monto !== undefined && g.monto !== null) ? formatEuro(g.monto) : (g.cobertura || '—');
+            tr.appendChild(tdName);
+            tr.appendChild(tdAmt);
+            body.appendChild(tr);
+          });
+        } else {
+          const defaults = [
+            ['RESPONSABILIDAD CIVIL-DAÑOS A COSAS', 2000],
+            ['RESPONSABILIDAD CIVIL-DAÑOS A PERSONAS', 2505],
+            ['EXCESO DE GARANTÍA', 250],
+            ['ASISTENCIA JURÍDICA', 250],
+            ['MUERTE DEL CONDUCTOR Y/O PASAJEROS', 500],
+            ['INVALIDEZ DEL CONDUCTOR Y/O PASAJEROS', 250],
+            ['GASTOS MÉDICOS', 250],
+            ['GASTOS FUNERARIOS', 250]
+          ];
+          defaults.forEach(([name, amt]) => {
+            const tr = document.createElement('tr');
+            const tdName = document.createElement('td'); tdName.textContent = name;
+            const tdAmt = document.createElement('td'); tdAmt.className = 'coverage-amount'; tdAmt.textContent = formatEuro(amt);
+            tr.appendChild(tdName); tr.appendChild(tdAmt);
+            body.appendChild(tr);
+          });
+        }
+
+        // Mostrar total: usar p.monto si existe, si no calcular suma de garantias/defaults
+        const totalEl = document.getElementById('cartaMonto');
+        if (totalEl) {
+          if (p.monto) totalEl.textContent = Number(p.monto).toFixed(2);
+          else {
+            const sum = (p.garantias && p.garantias.length) ? p.garantias.reduce((s, g) => s + (Number(g.monto) || 0), 0) : defaults.reduce((s, a) => s + Number(a[1]), 0);
+            totalEl.textContent = Number(sum).toFixed(2);
+          }
+        }
+      })();
+
       // ─── QR Code Generation ───
       generateQRCodes(p);
     }
@@ -1109,14 +1178,16 @@
       cartaQR.addData(qrData);
       cartaQR.make();
       const cartaImg = cartaQR.createDataURL(4, 0); // cell size 4, margin 0
-      document.getElementById('cartaQR').src = cartaImg;
+      const cartaImgEl = document.getElementById('cartaQR');
+      if (cartaImgEl) cartaImgEl.src = cartaImg;
 
       // Generate QR for Carnet (smaller)  
       const carnetQR = qrcode(0, 'M');
       carnetQR.addData(qrData);
       carnetQR.make();
       const carnetImg = carnetQR.createDataURL(3, 0); // cell size 3, margin 0
-      document.getElementById('carnetQR').src = carnetImg;
+      const carnetImgEl = document.getElementById('carnetQR');
+      if (carnetImgEl) carnetImgEl.src = carnetImg;
     }
 
     function showFormat(format) {
@@ -1140,6 +1211,37 @@
       showFormat(format);
       setTimeout(() => window.print(), 300);
     }
+
+    // --- Debug panel: intercept console messages and show in-page (useful to capture browser errors) ---
+    (function setupDebugPanel(){
+      try {
+        const panel = document.createElement('div');
+        panel.id = 'debugPanel';
+        panel.style.cssText = 'position:fixed;right:1rem;bottom:1rem;z-index:99999;max-width:520px;max-height:40vh;overflow:auto;background:rgba(0,0,0,0.78);color:#fff;padding:0.5rem;border-radius:8px;font-family:Inter,Arial,Helvetica,sans-serif;font-size:12px;display:none;box-shadow:0 6px 24px rgba(0,0,0,0.3)';
+
+        const header = document.createElement('div');
+        header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:6px';
+        const title = document.createElement('div'); title.textContent = 'Console'; title.style.fontWeight = '700';
+        const btn = document.createElement('button'); btn.textContent = 'Mostrar'; btn.style.cssText = 'background:#111827;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer;font-weight:600';
+        btn.onclick = () => { panel.style.display = panel.style.display === 'none' ? 'block' : 'none'; btn.textContent = panel.style.display === 'none' ? 'Mostrar' : 'Ocultar'; };
+        header.appendChild(title); header.appendChild(btn);
+        panel.appendChild(header);
+
+        const list = document.createElement('div'); list.id = 'debugList'; panel.appendChild(list);
+        document.body.appendChild(panel);
+
+        const orig = { log: console.log.bind(console), warn: console.warn.bind(console), error: console.error.bind(console), info: console.info.bind(console) };
+        function fmtArg(a){ try { return (typeof a === 'object' ? JSON.stringify(a) : String(a)); } catch(e){ return String(a); } }
+        function pushMsg(type, args){ const el = document.createElement('div'); el.style.padding = '2px 0'; el.style.lineHeight = '1.1'; if(type==='error'){ el.style.color = '#ffb4ab'; } else if(type==='warn'){ el.style.color = '#ffe9b3'; el.style.color = '#ffd580'; } else if(type==='info'){ el.style.color = '#cfe8ff'; } else { el.style.color = '#e6eef8'; }
+          const txt = '['+type+'] ' + Array.from(args).map(fmtArg).join(' ');
+          el.textContent = txt; list.appendChild(el); list.scrollTop = list.scrollHeight; }
+
+        console.log = function(...a){ pushMsg('log', a); orig.log(...a); };
+        console.warn = function(...a){ pushMsg('warn', a); orig.warn(...a); };
+        console.error = function(...a){ pushMsg('error', a); orig.error(...a); };
+        console.info = function(...a){ pushMsg('info', a); orig.info(...a); };
+      } catch (e) { /* ignore debug panel failures */ }
+    })();
 
     loadPolicy();
   </script>
