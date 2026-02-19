@@ -25,10 +25,14 @@ const LOGO = 'img/logo.png';
 
 // ── INFORMACIÓN LEGAL ──
 const LEGAL = {
+  registro: 'Registrada en la Oficina del registro Publico de los Municipios San Felipe, Independecia, Cocorote y Veroes del Estado Yaracuy, Bajo el numero 27, Folio 161, del Tomo 24 del Protocolo de Transcripción del 2010,Inscrita y Autorizada para realizar actividad de Seguros por la SUNACOOP bajo el Nro de Expendiente 381558,Inscrita y Autorizada para realizar actividad de Seguros por la SUDEASEGU bajo el ES - 66',
+};
+
+const LEGALCARNET = {
+  registro: 'SUNACOOP Nro 381558, SUDEASEGU Nro ES - 66',
+};
+
+const COOP = {
   empresa: 'American International de Seguros, C.A.',
   rif: 'J-00053617-1',
-  registro: 'Registrada en la Oficina del registro Publico de los Municipios San Felipe, Independecia, Cocorote y Veroes del Estado Yaracuy, Bajo el numero 27, Folio 161, del Tomo 24 del Protocolo de Transcripción del 2010,Inscrita y Autorizada para realizar actividad de Seguros por la SUNACOOP bajo el Nro de Expendiente 381558,Inscrita y Autorizada para realizar actividad de Seguros por la SUDEASEGU bajo el ES - 66',
-  telefono: '(0422) 7203303',
-  email: 'info@segurosrcv.com',
-  nota: ''
 };

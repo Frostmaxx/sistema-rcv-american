@@ -164,7 +164,8 @@ function formatDate(dateStr) {
 }
 
 function formatCurrency(amount) {
-  return '$' + Number(amount).toLocaleString('es-VE', { minimumFractionDigits: 2 });
+  if (amount === undefined || amount === null || amount === '') return '—';
+  return '€ ' + Number(amount).toLocaleString('es-VE', { minimumFractionDigits: 2 });
 }
 
 function statusBadge(status) {
@@ -391,7 +392,6 @@ async function loadPolicies(page = 1) {
           <td>
             <div class="actions-cell">
               <button class="btn btn-sm btn-secondary btn-icon" title="Imprimir Carta" onclick="printPolicy(${p.id}, 'carta')">📄</button>
-              <button class="btn btn-sm btn-secondary btn-icon" title="Imprimir Carnet" onclick="printPolicy(${p.id}, 'carnet')">💳</button>
               <button class="btn btn-sm btn-primary btn-icon" title="Renovar" onclick="renewPolicy(${p.id}, '${p.policy_number}')">🔄</button>
               <button class="btn btn-sm btn-secondary btn-icon" title="Editar" onclick="editPolicy(${p.id})">✏️</button>
               <button class="btn btn-sm btn-danger btn-icon" title="Eliminar" onclick="deletePolicy(${p.id}, '${p.policy_number}')">🗑️</button>

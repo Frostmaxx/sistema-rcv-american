@@ -5,17 +5,19 @@ const { authenticateToken } = require('../middleware/auth');
 const router = express.Router();
 router.use(authenticateToken);
 
-// Generate policy number (uses persistent sequence to avoid duplicates after deletes)
+// Generate policy number (persistent 8-digit numeric sequence)
 function generatePolicyNumber() {
-  const year = new Date().getFullYear();
-  const seqName = `policy_${year}`;
-  
-  // Get or create the sequence for this year
+  // Use a global sequence name to keep an ever-increasing 8-digit counter
+  const seqName = 'policy';
+
+  // Get or create the global sequence
   let seq = queryGet('SELECT value FROM sequences WHERE name = ?', [seqName]);
   if (!seq) {
-    // Initialize from existing policies if any, otherwise start from 0
-    // New format: <YEAR>-<8-digit counter> (e.g. 2026-00000001)
-    const maxRow = queryGet("SELECT MAX(CAST(SUBSTR(policy_number, -8) AS INTEGER)) as maxNum FROM policies WHERE policy_number LIKE ?", [`${year}-%`]);
+    // Initialize from existing policies: support both old formats (YEAR-########)
+    // and existing numeric-only policy numbers. Extract the numeric portion when present.
+    const maxRow = queryGet(
+      `SELECT MAX(CAST(CASE WHEN INSTR(policy_number, '-')>0 THEN SUBSTR(policy_number, -8) ELSE policy_number END AS INTEGER)) as maxNum FROM policies`
+    );
     const startVal = maxRow && maxRow.maxNum ? maxRow.maxNum : 0;
     queryRun('INSERT INTO sequences (name, value) VALUES (?, ?)', [seqName, startVal]);
     seq = { value: startVal };
@@ -23,7 +25,7 @@ function generatePolicyNumber() {
 
   const nextNum = seq.value + 1;
   queryRun('UPDATE sequences SET value = ? WHERE name = ?', [nextNum, seqName]);
-  return `${year}-${String(nextNum).padStart(8, '0')}`;
+  return String(nextNum).padStart(8, '0');
 }
 
 // Dynamic coverage pricing from DB

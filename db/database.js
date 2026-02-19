@@ -10,16 +10,19 @@ if (!fs.existsSync(dbDir)) {
 }
 
 let db = null;
+let SQL_LIB = null;
 
 async function initDatabase() {
-  const SQL = await initSqlJs();
+  if (!SQL_LIB) {
+    SQL_LIB = await initSqlJs();
+  }
 
   // Load existing DB or create new
   if (fs.existsSync(DB_PATH)) {
     const buffer = fs.readFileSync(DB_PATH);
-    db = new SQL.Database(buffer);
+    db = new SQL_LIB.Database(buffer);
   } else {
-    db = new SQL.Database();
+    db = new SQL_LIB.Database();
   }
 
   db.run('PRAGMA foreign_keys = ON');
@@ -161,6 +164,16 @@ async function initDatabase() {
   return db;
 }
 
+function closeDatabase() {
+  try {
+    if (db) {
+      try { saveDb(); } catch(e) {}
+      try { if (typeof db.close === 'function') db.close(); } catch(e) {}
+      db = null;
+    }
+  } catch (e) { /* ignore close errors */ }
+}
+
 function saveDb() {
   if (db) {
     const data = db.export();
@@ -168,6 +181,10 @@ function saveDb() {
     fs.writeFileSync(DB_PATH, buffer);
   }
 }
+
+// Ensure DB is closed on process exit to avoid libuv handle assertion on Windows
+process.on('beforeExit', () => { try { closeDatabase(); } catch(e) {} });
+process.on('exit', () => { try { closeDatabase(); } catch(e) {} });
 
 // Helper: run query and return results as array of objects
 function queryAll(sql, params = []) {
@@ -201,4 +218,4 @@ function queryRun(sql, params = []) {
   return { lastInsertRowid: lastId, changes };
 }
 
-module.exports = { initDatabase, queryAll, queryGet, queryRun, getDb: () => db };
+module.exports = { initDatabase, queryAll, queryGet, queryRun, getDb: () => db, closeDatabase };

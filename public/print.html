@@ -124,7 +124,6 @@
       padding: 1rem 1.2rem;
       background: transparent;
       color: #111827;
-      border-bottom: 1px solid var(--border);
       gap: 1rem;
     }
 
@@ -136,8 +135,8 @@
     }
 
     .carta-header .left { width: 18%; align-items: flex-start; }
-    .carta-header .center { width: 58%; align-items: center; text-align: center; }
-    .carta-header .right { width: 24%; align-items: flex-end; text-align: right; }
+    .carta-header .center { width: 38%; align-items: center; text-align: center; }
+    .carta-header .right { width: 44%; align-items: flex-end; text-align: right; }
 
     .carta-brand-icon { font-size: 1.6rem; }
 
@@ -153,6 +152,24 @@
       line-height: 1.1;
     }
 
+    .header-company {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #111827;
+      text-transform: none;
+    }
+    .carta-header .right .header-company,
+    .carta-header .right .rif {
+      text-align: right;
+    }
+    .carta-header .right .header-company {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      max-width: 100%;
+    }
+
     .company-legal {
       padding: 0.6rem 1.2rem;
       text-align: center;
@@ -160,17 +177,16 @@
       background: transparent;
       font-size: 0.8rem;
       line-height: 1.1;
-      border-bottom: 1px solid var(--border);
     }
 
-    .carta-header .right .rif { font-weight: 700; font-size: 0.85rem; }
+    .carta-header .right .rif { font-weight: 700; font-size: 0.8rem; }
 
     .document-title {
       text-align: center;
-      padding: 0.9rem 1.2rem;
+      padding: 0.4rem 1.2rem;
       font-weight: 800;
       letter-spacing: 0.06em;
-      margin-top: 0.6rem;
+      margin-top: 0.4rem;
     }
 
     .document-subtitle {
@@ -186,28 +202,34 @@
       grid-template-columns: repeat(4, 1fr);
       gap: 0.6rem;
       padding: 0.8rem 1.2rem;
-      border-bottom: 1px solid var(--border);
       background: #fff;
     }
 
-    .contract-item .label { font-size: 0.62rem; color: var(--gray); font-weight:700; text-transform:uppercase; }
-    .contract-item .value { font-size: 0.95rem; font-weight:800; }
+    .contract-item .label { font-size: 0.7rem; color: var(--gray); font-weight:700; text-transform:uppercase; }
+    .contract-item .value { font-size: 0.7rem; font-weight:800; }
 
-    .client-block, .vehicle-block { padding: 0.9rem 1.2rem; background: #fff; }
-    .section-heading { font-size: 0.7rem; font-weight:800; color:#111827; border-bottom: 1px solid var(--border); padding-bottom:0.4rem; margin-bottom:0.6rem; }
+    .client-block, .vehicle-block { padding: 0.4rem 0.7rem; background: #fff; }
+    .section-heading { font-size: 0.7rem; font-weight:800; color:#111827; border-top: 1px solid var(--border);border-bottom: 1px solid var(--border); padding-top:0.4rem; padding-bottom:0.4rem; margin-top:0.6rem;margin-bottom:0.6rem; }
 
-    .client-grid, .vehicle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; }
-    .client-row { display:flex; justify-content:space-between; gap:0.6rem; }
-    .client-label { font-size:0.62rem; color:var(--gray); font-weight:700; text-transform:uppercase; }
-    .client-value { font-size:0.95rem; font-weight:600; }
+    .client-grid, .vehicle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 1rem; }
+    .client-row { display:flex; justify-content:space-between; gap:0.4rem; }
+    .client-label { font-size:0.7rem; color:var(--gray); font-weight:700; text-transform:uppercase; }
+    .client-value { font-size:0.7rem; font-weight:600; }
 
-    .coverage-table { width:100%; border-collapse: collapse; margin-top:0.6rem; }
-    .coverage-table td, .coverage-table th { border: 1px solid var(--border); padding: 0.5rem 0.6rem; font-size:0.92rem; }
+    .coverage-table { width:100%; border-collapse: collapse; margin-top:0.4rem; }
+    .coverage-table td, .coverage-table th { padding: 0.2rem 0.4rem; font-size:0.6rem; }
     .coverage-table th { background:#fafafa; font-weight:800; text-align:left; }
     .coverage-amount { text-align:right; width:120px; font-weight:700; }
 
-    .footer-stamps { display:flex; gap:1rem; align-items:center; justify-content:space-between; padding:1rem 1.2rem; }
+    .footer-stamps { display:flex; gap:1rem; align-items:flex-end; justify-content:space-between; padding:1rem 1.2rem; }
     .stamp { opacity:0.9; filter: grayscale(100%); }
+
+    /* Stamps and signature images (stacked on the right above the signature line) */
+    .footer-stamps .sig-right { display:flex; flex-direction:column; align-items:flex-end; }
+    .footer-stamps .stamp-group { display:flex; flex-direction:row; gap:0.5rem; align-items:center; justify-content:flex-end; margin-bottom:0.15rem; }
+    .footer-stamps .sig-left { display:flex; flex-direction:column; align-items:flex-start; }
+    .footer-stamps .sig-right { display:flex; flex-direction:column; align-items:flex-end; }
+    .footer-stamps .stamp-image { max-height:80px; margin-left: 0.6rem; width:auto; display:inline-block; opacity:0.95; }
 
     .carta-title-bar {
       background: var(--primary);
@@ -351,27 +373,12 @@
     .carta-legal {
       text-align: center;
       padding: 0.75rem 2.2rem;
-      background: #fafbfc;
-      font-size: 0.6rem;
-      color: #94a3b8;
-      line-height: 1.5;
-      border-top: 1px solid var(--border);
-    }
-
-    .carta-status {
-      display: inline-block;
-      padding: 0.25rem 0.8rem;
-      border-radius: 20px;
       font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-    .carta-status.activa { background: #dcfce7; color: #16a34a; }
-    .carta-status.pendiente { background: #fef3c7; color: #d97706; }
-    .carta-status.vencida { background: #fee2e2; color: #dc2626; }
-    .carta-status.cancelada { background: #f1f5f9; color: #64748b; }
+      color: var(--dark);
+      line-height: 1.5;
+    }  
 
-    /* ══════════════════════════════════════
+       /* ══════════════════════════════════════
        CARNET FORMAT — License-style ID Card
        ══════════════════════════════════════ */
     .print-carnet-wrapper {
@@ -402,45 +409,21 @@
     }
 
     .carnet-header-band {
-      background: linear-gradient(135deg, #1a1a2e 0%, #2d2b55 60%, #4338ca 100%);
       color: white;
       padding: 0.28rem 0.5rem;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .carnet-header-left {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .carnet-brand-icon {
       width: auto;
       height: auto;
       background: none;
-      border-radius: 0;
       display: flex;
-      align-items: center;
       justify-content: center;
-      font-size: 0.6rem;
+      align-items: center;
       flex-shrink: 0;
-    }
-
-    .carnet-header-title {
-      font-size: 0.5rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      line-height: 1.1;
-    }
-
-    .carnet-header-subtitle {
-      font-size: 0.3rem;
-      opacity: 0.6;
-      font-weight: 500;
-      letter-spacing: 0.04em;
     }
 
     .carnet-policy-num {
@@ -456,32 +439,9 @@
     .carnet-body {
       flex: 1;
       display: flex;
-      padding: 0.3rem 0.5rem;
-      gap: 0.4rem;
+      padding: 0.2rem 0.5rem;
+      gap: 0.2rem;
     }
-
-    .carnet-photo-area {
-      display: none; /* Hidden - photo area removed */
-    }
-
-    .carnet-avatar {
-      display: none; /* Hidden - avatar removed */
-    }
-
-    .carnet-status-badge {
-      font-size: 0.35rem;
-      font-weight: 800;
-      padding: 0.1rem 0.3rem;
-      border-radius: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      align-self: flex-start;
-      margin-bottom: 0.2rem;
-    }
-    .carnet-status-badge.activa { background: #dcfce7; color: #16a34a; }
-    .carnet-status-badge.pendiente { background: #fef3c7; color: #d97706; }
-    .carnet-status-badge.vencida { background: #fee2e2; color: #dc2626; }
-    .carnet-status-badge.cancelada { background: #f1f5f9; color: #64748b; }
 
     .carnet-data-area {
       flex: 1;
@@ -491,6 +451,13 @@
       gap: 0.13rem;
     }
 
+    .carnet-legal {
+      text-align: center;
+      font-size: 0.5rem;
+      color: #94a3b8;
+      padding: 0.18rem 0.5rem;
+      line-height: 1.3;
+    }
     .carnet-data-row {
       display: flex;
       gap: 0.04rem;
@@ -498,7 +465,7 @@
     }
 
     .carnet-data-row .d-label {
-      font-size: 0.35rem;
+      font-size: 0.6rem;
       color: #94a3b8;
       text-transform: uppercase;
       font-weight: 700;
@@ -507,7 +474,7 @@
     }
 
     .carnet-data-row .d-value {
-      font-size: 0.55rem;
+      font-size: 0.6rem;
       font-weight: 600;
       color: #1e293b;
       line-height: 1.15;
@@ -580,13 +547,22 @@
       border-radius: 10px;
     }
 
-    .carnet-back-header {
-      background: #f8fafc;
-      padding: 0.25rem 0.5rem;
-      border-bottom: 1px solid #e2e8f0;
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
+    .carnet-header-title {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.55rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      line-height: 0,6rem;
+    }
+
+    .carnet-header-subtitle {
+      text-align: center;
+      font-size: 0.55rem;
+      opacity: 0.6;
+      font-weight: 500;
+      letter-spacing: 0.04em;
     }
 
     .carnet-back h4 {
@@ -607,12 +583,12 @@
 
     .carnet-back-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 2fr;
       gap: 0.22rem 0.5rem;
     }
 
     .carnet-back-field .cb-label {
-      font-size: 0.35rem;
+      font-size: 0.6rem;
       color: #94a3b8;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -620,7 +596,7 @@
     }
 
     .carnet-back-field .cb-value {
-      font-size: 0.52rem;
+      font-size: 0.55rem;
       font-weight: 600;
       color: #334155;
       margin-top: 0.02rem;
@@ -671,16 +647,18 @@
     }
 
     .carnet-back-qr {
-      position: absolute;
-      top: 0.25rem;
-      right: 0.25rem;
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      top: 6.0rem;
+      right: 0.4rem;
       text-align: center;
     }
 
     .carnet-back-qr img {
       display: block;
-      width: 0.6in;
-      height: 0.6in;
+      width: 0.8in;
+      height: 0.8in;
       border: 1px solid #e5e7eb;
       border-radius: 4px;
     }
@@ -689,10 +667,14 @@
       font-size: 0.2rem;
       color: #94a3b8;
       font-weight: 700;
-      margin-top: 0.05rem;
+      margin-top: 0.2rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
+
+    /* Carnet page layout: show front and back side-by-side without gap */
+    .carnet-page { page-break-before: always; display: flex; justify-content: center; margin-top: 2.0rem; gap: 0; padding: 0.2in 0; }
+    .carnet-page .carnet-card { margin: 0; border-radius: 6px; }
 
     /* ── Shared hidden class ── */
     .hidden { display: none !important; }
@@ -750,9 +732,6 @@
     <button class="btn-print-carta" onclick="switchAndPrint('carta')" id="btnCarta">
       📄 Imprimir Carta
     </button>
-    <button class="btn-print-carnet" onclick="switchAndPrint('carnet')" id="btnCarnet">
-      💳 Imprimir Carnet
-    </button>
     <button class="btn-back" onclick="window.close()">
       ← Volver
     </button>
@@ -768,14 +747,15 @@
         <!-- título principal moved below header to match recibo layout -->
       </div>
       <div class="right">
-        <div class="rif">RIF: —</div>
+        <div class="header-company" id="headerCompany">—</div>
+        <div class="rif" id="headerRif">RIF: —</div>
       </div>
     </div>
 
     <!-- Bloque con nombre de la empresa y registro legal (debajo del header) -->
     <div class="company-legal" id="companyLegalBlock">
       <div class="carta-company-name">Seguro de Responsabilidad Civil de Vehículos</div>
-      <div class="carta-company-meta">Registrada en la Oficina del registro Público de los Municipios San Felipe, Independencia, Cocorote y Veroes del Estado Yaracuy — Inscrita y Autorizada para realizar actividad de Seguros</div>
+      <div class="carta-legal" id="cartaLegal"></div>
     </div>
 
     <div class="document-title">PÓLIZA DE RESPONSABILIDAD CIVIL DE VEHÍCULOS</div>
@@ -875,109 +855,85 @@
       </div>
       <div style="text-align:center; color:#94a3b8;">&nbsp;</div>
       <div class="sig-right">
+        <div class="stamp-group" aria-hidden="true">
+          <img src="img/paid-stamp.png" class="stamp-image" alt="Paid stamp">
+          <img src="img/coop-stamp.png" class="stamp-image" alt="Coop stamp">
+          <img src="img/signature.png" class="stamp-image" alt="Firma autorizada">
+        </div>
         <div class="sig-line" style="border-top:1px solid #cbd5e1; padding-top:0.6rem; width:220px; text-align:center;">FIRMA AUTORIZADA</div>
       </div>
     </div>
 
-    <div class="carta-legal" id="cartaLegal"></div>
-  </div>
+    <!-- Carnet page: front and back on their own sheet, side-by-side with no gap -->
+     
+    <div class="carnet-page" id="carnetPage">
+      <div class="carnet-card" style="width:3.375in;">
+        <div class="carnet-front">
+          <div class="carnet-header-band">
+            <div class="carnet-brand-icon" id="carnetLogoIcon"></div>
+            <div class="carnet-legal" id="carnetlegal"><p>SUNACOOP Nro 381558, SUDEASEGU Nro ES - 66</p></div>
+          </div>
 
-  <!-- ═══ CARNET FORMAT (License Style) ═══ -->
-  <div class="print-carnet-wrapper hidden" id="printCarnet">
-    <div class="carnet-label">— Frente del Carnet —</div>
-    <div class="carnet-card">
-      <div class="carnet-front">
-        <!-- Header Band -->
-        <div class="carnet-header-band">
-          <div class="carnet-header-left">
-            <div class="carnet-brand-icon" id="carnetLogoIcon">🛡️</div>
-            <div>
-              <div class="carnet-header-title">Certificado de Seguro RCV</div>
+          <div class="carnet-body">
+            <div class="carnet-data-area">
+              <div class="carnet-data-row">
+                <span class="d-label">Nombre del Asegurado</span>
+                <span class="d-value big" id="carnetClientName">—</span>
+              </div>
+              <div class="carnet-data-row">
+                <span class="d-label">Cédula de Identidad</span>
+                <span class="d-value" id="carnetClientCedula">—</span>
+              </div>
+              <div class="carnet-data-row">
+                <span class="d-label">Cobertura Contratada</span>
+                <span class="d-value" id="carnetCoberturaFront">—</span>
+              </div>
+              <div class="carnet-data-inline">
+                <div class="carnet-data-row">
+                  <span class="d-label">Fecha Emisión</span>
+                  <span class="d-value" id="carnetFechaEmision">—</span>
+                </div>
+                <div class="carnet-data-row">
+                  <span class="d-label">Vencimiento</span>
+                  <span class="d-value" id="carnetFechaVenc">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="carnet-card" style="width:3.375in;">
+        <div class="carnet-back" style="position:relative;">
+          <div class="carnet-header-title">Certificado de Seguro RCV</div>
               <div class="carnet-header-subtitle">Responsabilidad Civil Vehicular</div>
-            </div>
+              
+          <div class="carnet-back-qr" style="position:absolute;top:4rem;right:0.4rem;">
+            <img id="carnetQR" src="" alt="QR">
           </div>
-          <div class="carnet-policy-num" id="carnetPolicyNum">—</div>
-        </div>
-
-        <!-- Body: Data Only -->
-        <div class="carnet-body">
-          <div class="carnet-data-area">
-            <span class="carnet-status-badge" id="carnetEstado">—</span>
-            <div class="carnet-data-row">
-              <span class="d-label">Nombre del Asegurado</span>
-              <span class="d-value big" id="carnetClientName">—</span>
-            </div>
-            <div class="carnet-data-row">
-              <span class="d-label">Cédula de Identidad</span>
-              <span class="d-value" id="carnetClientCedula">—</span>
-            </div>
-            <div class="carnet-data-row">
-              <span class="d-label">Cobertura Contratada</span>
-              <span class="d-value" id="carnetCoberturaFront">—</span>
-            </div>
-            <div class="carnet-data-inline">
-              <div class="carnet-data-row">
-                <span class="d-label">Fecha Emisión</span>
-                <span class="d-value" id="carnetFechaEmision">—</span>
+          <div class="carnet-back-body" style="padding:0.6rem 0.8rem;">
+            <div class="carnet-back-grid">
+              <div class="carnet-back-field">
+                <div class="cb-label">Placa</div>
+                <div class="cb-value" id="carnetPlaca">—</div>
               </div>
-              <div class="carnet-data-row">
-                <span class="d-label">Vencimiento</span>
-                <span class="d-value" id="carnetFechaVenc">—</span>
+              <div class="carnet-back-field">
+                <div class="cb-label">Marca / Modelo</div>
+                <div class="cb-value" id="carnetMarcaModelo">—</div>
+              </div>
+              <div class="carnet-back-field">
+                <div class="cb-label">Año</div>
+                <div class="cb-value" id="carnetAnio">—</div>
+              </div>
+              <div class="carnet-back-field">
+                <div class="cb-label">Serial</div>
+                <div class="cb-value" id="carnetSerial">—</div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Bottom Strip - Status Only -->
-        <div class="carnet-bottom-strip">
-          <div class="carnet-cobertura-badge" id="carnetCoberturaBadge">—</div>
-        </div>
       </div>
     </div>
-
-    <div class="carnet-label">— Reverso del Carnet —</div>
-    <div class="carnet-card">
-      <div class="carnet-back" style="position: relative;">
-        <!-- QR Code for Carnet -->
-        <div class="carnet-back-qr">
-          <img id="carnetQR" src="" alt="QR">
-          <div class="carnet-qr-label">Verifica</div>
-        </div>
-        <div class="carnet-back-header">
-          <h4>🚗 Datos del Vehículo</h4>
-        </div>
-        <div class="carnet-back-body">
-          <div class="carnet-back-grid">
-            <div class="carnet-back-field">
-              <div class="cb-label">Tipo de Vehículo</div>
-              <div class="cb-value" id="carnetVehTipo">—</div>
-            </div>
-            <div class="carnet-back-field">
-              <div class="cb-label">Placa</div>
-              <div class="cb-value" id="carnetPlaca">—</div>
-            </div>
-            <div class="carnet-back-field">
-              <div class="cb-label">Marca / Modelo</div>
-              <div class="cb-value" id="carnetMarcaModelo">—</div>
-            </div>
-            <div class="carnet-back-field">
-              <div class="cb-label">Año</div>
-              <div class="cb-value" id="carnetAnio">—</div>
-            </div>
-            <div class="carnet-back-field">
-              <div class="cb-label">Color</div>
-              <div class="cb-value" id="carnetColor">—</div>
-            </div>
-            <div class="carnet-back-field">
-              <div class="cb-label">Serial Carrocería</div>
-              <div class="cb-value" id="carnetSerial">—</div>
-            </div>
-          </div>
-        </div>
-        <div class="carnet-back-footer" id="carnetLegal"></div>
-      </div>
-    </div>
-  </div>
 
   <script src="js/legal-config.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -994,12 +950,21 @@
     }
 
     function formatCurrency(n) {
-      return '$' + Number(n).toLocaleString('es-VE', { minimumFractionDigits: 2 });
+      if (n === undefined || n === null || n === '') return '—';
+      return '€ ' + Number(n).toLocaleString('es-VE', { minimumFractionDigits: 2 });
     }
 
+    function formatPolicyNumber(raw){
+      if (!raw && raw !== 0) return '—';
+      const s = String(raw);
+      const m = s.match(/(\d+)$/);
+      const digits = m ? m[1] : s.replace(/\D/g,'');
+      const last8 = digits.slice(-8);
+      return last8.padStart(8,'0');
+    }
     const covLabels = { basica: 'Básica', intermedia: 'Intermedia', premium: 'Premium' };
     const vehLabels = { automovil: 'Automóvil', camioneta: 'Camioneta', moto: 'Moto', camion: 'Camión', bus: 'Bus' };
-    const statusLabels = { activa: 'Activa', pendiente: 'Pendiente', vencida: 'Vencida', cancelada: 'Cancelada' };
+    // statusLabels removed; status badge is no longer shown in prints
 
     async function loadPolicy() {
       const token = localStorage.getItem('rcv_token');
@@ -1032,18 +997,24 @@
       // ─── Carta ───
       // ─── Logo ───
       if (typeof LOGO !== 'undefined' && LOGO) {
-        document.getElementById('cartaLogoIcon').innerHTML = `<img src="${LOGO}" alt="Logo" style="height:50px;width:auto;object-fit:contain">`;
-        document.getElementById('carnetLogoIcon').innerHTML = `<img src="${LOGO}" alt="Logo" style="height:25px;width:auto;object-fit:contain">`;
+        const cartaLogoEl = document.getElementById('cartaLogoIcon'); if (cartaLogoEl) cartaLogoEl.innerHTML = `<img src="${LOGO}" alt="Logo" style="height:50px;width:auto;object-fit:contain">`;
+        const carnetLogoEl = document.getElementById('carnetLogoIcon'); if (carnetLogoEl) carnetLogoEl.innerHTML = `<img src="${LOGO}" alt="Logo" style="height:35px;width:auto;object-fit:contain">`;
       }
 
-      setText('cartaPolicyNum', p.policy_number);
+      // Rellenar RIF y nombre de la empresa del header desde la constante COOP si está definida
+      if (typeof COOP !== 'undefined' && COOP) {
+        if (COOP.empresa) setText('headerCompany', COOP.empresa);
+        if (COOP.rif) setText('headerRif', 'RIF: ' + COOP.rif);
+      }
+
+      // mostrar solo el contador numérico de 8 dígitos
+      const displayPolicyNum = formatPolicyNumber(p.policy_number);
+      setText('cartaPolicyNum', displayPolicyNum);
       // llenar el campo 'Contrato Nro.' que está debajo del título
-      setText('cartaPolicyNum_small', p.policy_number);
+      setText('cartaPolicyNum_small', displayPolicyNum);
       setText('cartaEmitido', formatDate(p.created_at));
 
-      // status (optional element)
-      const estadoEl = document.getElementById('cartaEstado');
-      if (estadoEl) { estadoEl.textContent = statusLabels[p.estado] || p.estado; estadoEl.className = 'carta-status ' + p.estado; }
+      // status badge removed from Carta (no-op)
 
       setText('cartaClientName', p.client_name || '—');
       setText('cartaClientCedula', p.client_cedula || '—');
@@ -1063,48 +1034,42 @@
       setText('cartaCobertura', covLabels[p.cobertura] || p.cobertura);
       // Some fields may not exist in new layout; guard currency fields
       const primaEl = document.getElementById('cartaPrima'); if (primaEl) primaEl.textContent = formatCurrency(p.prima);
-      const montoEl = document.getElementById('cartaMonto'); if (montoEl) montoEl.textContent = formatCurrency(p.monto);
+      const montoEl = document.getElementById('cartaMonto'); if (montoEl) montoEl.textContent = formatCurrency(p.prima);
       setText('cartaFechaInicio', formatDate(p.fecha_inicio));
       setText('cartaFechaFin', formatDate(p.fecha_fin));
       setText('cartaNotas', p.notas || 'Sin observaciones.');
 
       // ─── Legal Footer (Carta) ───
       document.getElementById('cartaLegal').innerHTML = 
-        `<strong>${LEGAL.empresa}</strong> — RIF: ${LEGAL.rif}<br>` +
-        `${LEGAL.registro}<br>` +
-        `Tel: ${LEGAL.telefono} | ${LEGAL.email}<br>` +
-        `${LEGAL.nota}`;
+        `${LEGAL.registro}<br>` 
+        ;
 
       // ─── Carnet ───
-      document.getElementById('carnetPolicyNum').textContent = p.policy_number;
-
       const name = p.client_name || '—';
-
-      // Front - Client and Policy Info
-      document.getElementById('carnetClientName').textContent = name;
-      document.getElementById('carnetClientCedula').textContent = p.client_cedula || '—';
-      document.getElementById('carnetCoberturaFront').textContent = covLabels[p.cobertura] || p.cobertura;
-      document.getElementById('carnetFechaEmision').textContent = formatDate(p.created_at);
-      document.getElementById('carnetFechaVenc').textContent = formatDate(p.fecha_fin);
-
-      // Coverage badge (bottom strip)
-      document.getElementById('carnetCoberturaBadge').textContent = covLabels[p.cobertura] || p.cobertura;
-
-      const carnetEstado = document.getElementById('carnetEstado');
-      carnetEstado.textContent = statusLabels[p.estado] || p.estado;
-      carnetEstado.className = 'carnet-status-badge ' + p.estado;
-
-      // Back - Vehicle Data
-      document.getElementById('carnetVehTipo').textContent = vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo;
-      document.getElementById('carnetPlaca').textContent = p.placa;
-      document.getElementById('carnetMarcaModelo').textContent = `${p.marca} ${p.modelo}`;
-      document.getElementById('carnetAnio').textContent = p.anio;
-      document.getElementById('carnetColor').textContent = p.color || '—';
-      document.getElementById('carnetSerial').textContent = p.serial_carroceria || '—';
+      // Carnet elements removed; guard any optional elements if present
+      const carnetNumEl = document.getElementById('carnetPolicyNum'); if (carnetNumEl) carnetNumEl.textContent = displayPolicyNum;
+      setText('carnetClientName', name);
+      setText('carnetClientCedula', p.client_cedula || '—');
+      setText('carnetCoberturaFront', covLabels[p.cobertura] || p.cobertura);
+      setText('carnetFechaEmision', formatDate(p.created_at));
+      setText('carnetFechaVenc', formatDate(p.fecha_fin));
+      setText('carnetCoberturaBadge', covLabels[p.cobertura] || p.cobertura);
+      // carnet status badge removed (no-op)
+      setText('carnetVehTipo', vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo);
+      setText('carnetPlaca', p.placa);
+      setText('carnetMarcaModelo', `${p.marca} ${p.modelo}`);
+      setText('carnetAnio', p.anio);
+      setText('carnetColor', p.color || '—');
+      setText('carnetSerial', p.serial_carroceria || '—');
 
       // ─── Legal Footer (Carnet) ───
-      document.getElementById('carnetLegal').innerHTML = 
-        `${LEGAL.empresa} — RIF: ${LEGAL.rif} | ${LEGAL.telefono} — Preséntelo ante las autoridades de tránsito cuando sea requerido.`;
+      const LEGALCARNET = document.getElementById('carnetLegal');
+      if (LEGALCARNET) LEGALCARNET.innerHTML = `${LEGALCARNET.registro}`;
+
+      const legalFrontEl = document.getElementById('carnetLegal'); 
+      if (legalFrontEl && typeof LEGALCARNET !== 'undefined') {
+      legalFrontEl.innerHTML = LEGALCARNET;
+      }
 
       // ─── Coberturas (Carta) ───
       (function populateCoverages() {
@@ -1149,13 +1114,13 @@
           });
         }
 
-        // Mostrar total: usar p.monto si existe, si no calcular suma de garantias/defaults
+        // Mostrar total: usar la prima de la póliza (p.prima); si no existe, calcular suma de garantias/defaults
         const totalEl = document.getElementById('cartaMonto');
         if (totalEl) {
-          if (p.monto) totalEl.textContent = Number(p.monto).toFixed(2);
+          if (p.prima) totalEl.textContent = formatEuro(p.prima);
           else {
             const sum = (p.garantias && p.garantias.length) ? p.garantias.reduce((s, g) => s + (Number(g.monto) || 0), 0) : defaults.reduce((s, a) => s + Number(a[1]), 0);
-            totalEl.textContent = Number(sum).toFixed(2);
+            totalEl.textContent = formatEuro(sum);
           }
         }
       })();
@@ -1166,11 +1131,12 @@
 
     function generateQRCodes(policy) {
       // QR data contains verification info
+      const formatted = formatPolicyNumber(policy.policy_number);
       const qrData = JSON.stringify({
-        poliza: policy.policy_number,
+        poliza: formatted,
         estado: policy.estado,
         vence: policy.fecha_fin,
-        verificar: `${window.location.origin}/verify/${policy.policy_number}`
+        verificar: `${window.location.origin}/verify/${formatted}`
       });
 
       // Generate QR for Carta (larger)
@@ -1192,18 +1158,15 @@
 
     function showFormat(format) {
       const carta = document.getElementById('printCarta');
-      const carnet = document.getElementById('printCarnet');
 
-      if (format === 'carta') {
-        carta.classList.remove('hidden');
-        carnet.classList.add('hidden');
+      // Integrated carnet: always part of the carta document
+      if (format === 'carta' || format === 'carnet') {
+        if (carta) carta.classList.remove('hidden');
         document.body.className = 'mode-carta';
-        document.getElementById('formatName').textContent = 'Carta (8.5" × 11")';
+        const fmt = document.getElementById('formatName'); if (fmt) fmt.textContent = 'Carta (incluye Carnet)';
       } else {
-        carta.classList.add('hidden');
-        carnet.classList.remove('hidden');
-        document.body.className = 'mode-carnet';
-        document.getElementById('formatName').textContent = 'Carnet (tarjeta)';
+        if (carta) carta.classList.remove('hidden');
+        const fmt = document.getElementById('formatName'); if (fmt) fmt.textContent = 'Carta (incluye Carnet)';
       }
     }
 
