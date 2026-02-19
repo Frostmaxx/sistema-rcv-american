@@ -565,11 +565,14 @@
       letter-spacing: 0.04em;
     }
 
-    .carnet-back h4 {
-      font-size: 0.52rem;
-      color: var(--primary);
+    .carnet-policy-num {
+      padding: 0.4rem 0.2rem;
+      font-size: 0.6rem;
+      color: var(--dark);
       text-transform: uppercase;
       letter-spacing: 0.06em;
+      flex-direction: column;
+      margin-left: 0.4rem;
       font-weight: 800;
     }
 
@@ -578,7 +581,7 @@
       padding: 0.3rem 0.5rem;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content:flex-start;
     }
 
     .carnet-back-grid {
@@ -907,7 +910,7 @@
         <div class="carnet-back" style="position:relative;">
           <div class="carnet-header-title">Certificado de Seguro RCV</div>
               <div class="carnet-header-subtitle">Responsabilidad Civil Vehicular</div>
-              <div class="carnet-policy-num" id="carnetPolicyNum"><p>Póliza Nro.</p>—</div>
+              <div class="carnet-policy-num" id="carnetPolicyNum">—</div>
           <div class="carnet-back-qr" style="position:absolute;top:4rem;right:0.4rem;">
             <img id="carnetQR" src="" alt="QR">
           </div>
@@ -1046,6 +1049,15 @@
 
       // ─── Carnet ───
       const name = p.client_name || '—';
+
+
+      const carnetPolicyNumEl = document.getElementById('carnetPolicyNum');
+      if (carnetPolicyNumEl) {
+
+      // <- Aquí inyectamos el prefijo SOLO para la vista del carnet
+      carnetPolicyNumEl.textContent = `Póliza Nro. ${p.policy_number}`; 
+      }
+
       // Carnet elements removed; guard any optional elements if present
       const carnetNumEl = document.getElementById('carnetPolicyNum'); if (carnetNumEl) carnetNumEl.textContent = displayPolicyNum;
       setText('carnetClientName', name);
