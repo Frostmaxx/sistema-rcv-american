@@ -40,8 +40,8 @@ async function startServer() {
     res.status(500).json({ error: 'Error interno del servidor.' });
   });
 
-  app.listen(PORT, () => {
-    console.log(`🛡️  Sistema RCV ejecutándose en http://localhost:${PORT}`);
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🛡️  Sistema RCV ejecutándose en el puerto ${PORT}`);
   });
 }
 
