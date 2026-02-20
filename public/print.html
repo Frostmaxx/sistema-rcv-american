@@ -832,9 +832,13 @@
           <div class="client-label">Año</div>
           <div class="client-value" id="cartaVehAnio">—</div>
         </div>
-        <div style="grid-column: span 2;">
+        <div style="grid-column: span 1;">
           <div class="client-label">Serial Carrocería</div>
           <div class="client-value" id="cartaVehSerial">—</div>
+        </div>
+        <div style="grid-column: span 1;">
+          <div class="client-label">Serial Motor</div>
+          <div class="client-value" id="cartaVehSerialMotor">—</div>
         </div>
       </div>
     </div>
@@ -1033,6 +1037,7 @@
       setText('cartaVehPlaca', p.placa);
       setText('cartaVehColor', p.color || '—');
       setText('cartaVehSerial', p.serial_carroceria || '—');
+      setText('cartaVehSerialMotor', p.serial_motor || '—')
 
       setText('cartaCobertura', covLabels[p.cobertura] || p.cobertura);
       // Some fields may not exist in new layout; guard currency fields
@@ -1073,6 +1078,7 @@
       setText('carnetAnio', p.anio);
       setText('carnetColor', p.color || '—');
       setText('carnetSerial', p.serial_carroceria || '—');
+      setText('carnetSerialMotor', p.serial_motor || '—');
 
       // ─── Legal Footer (Carnet) ───
       const LEGALCARNET = document.getElementById('carnetLegal');

@@ -104,7 +104,7 @@ router.get('/:id', (req, res) => {
 // Create policy
 router.post('/', (req, res) => {
   try {
-    const { client_id, tipo_vehiculo, placa, marca, modelo, anio, color, serial_carroceria, cobertura, fecha_inicio, fecha_fin, notas } = req.body;
+    const { client_id, tipo_vehiculo, placa, marca, modelo, anio, color, serial_carroceria, serial_motor, cobertura, fecha_inicio, fecha_fin, notas } = req.body;
 
     if (!client_id || !tipo_vehiculo || !placa || !marca || !modelo || !anio || !cobertura || !fecha_inicio || !fecha_fin) {
       return res.status(400).json({ error: 'Todos los campos obligatorios deben ser completados.' });
@@ -117,7 +117,7 @@ router.post('/', (req, res) => {
     const { prima, monto } = getCoveragePricing(cobertura);
 
     const result = queryRun(
-      `INSERT INTO policies (policy_number, client_id, tipo_vehiculo, placa, marca, modelo, anio, color, serial_carroceria, cobertura, monto, prima, fecha_inicio, fecha_fin, estado, notas, created_by)
+      `INSERT INTO policies (policy_number, client_id, tipo_vehiculo, placa, marca, modelo, anio, color, serial_carroceria, serial_motor, cobertura, monto, prima, fecha_inicio, fecha_fin, estado, notas, created_by)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'activa', ?, ?)`,
       [policy_number, client_id, tipo_vehiculo, placa.toUpperCase(), marca, modelo, anio, color || null, serial_carroceria || null, cobertura, monto, prima, fecha_inicio, fecha_fin, notas || null, req.user.id]
     );

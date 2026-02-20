@@ -70,6 +70,7 @@ async function initDatabase() {
       anio INTEGER NOT NULL,
       color TEXT,
       serial_carroceria TEXT,
+      serial_motor TEXT,
       cobertura TEXT NOT NULL,
       monto REAL NOT NULL,
       prima REAL NOT NULL,
