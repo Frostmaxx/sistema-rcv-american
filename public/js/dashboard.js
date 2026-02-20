@@ -724,19 +724,32 @@ async function loadUsers() {
   }
 }
 
+// NUEVA FUNCIÓN: Prepara el modal para crear o editar
+function openUserModal(user = null) {
+  document.getElementById('userForm').reset();
+  document.getElementById('userId').value = '';
+  
+  if (user) {
+    document.getElementById('userId').value = user.id;
+    document.getElementById('userUsername').value = user.username;
+    document.getElementById('userEmailField').value = user.email;
+    document.getElementById('userRoleField').value = user.role;
+    document.getElementById('userModalTitle').textContent = 'Editar Usuario';
+  } else {
+    document.getElementById('userModalTitle').textContent = 'Nuevo Usuario';
+  }
+  
+  openModal('userModal');
+}
+
 async function editUser(id) {
   try {
     const data = await apiFetch('/api/users');
     const user = data.users.find(u => u.id === id);
     if (!user) return;
     
-    document.getElementById('userForm').reset();
-    document.getElementById('userId').value = user.id;
-    document.getElementById('userUsername').value = user.username;
-    document.getElementById('userEmailField').value = user.email;
-    document.getElementById('userRoleField').value = user.role;
-    
-    openModal('userModal');
+    // Llamamos a la función centralizada
+    openUserModal(user);
   } catch (err) {
     console.error('Error fetching user:', err);
   }
@@ -753,25 +766,39 @@ async function saveUser(e) {
   
   const password = document.getElementById('userPassword').value;
   if (password) body.password = password;
+
+  // Validación: Si no hay ID (es creación) y no hay password, bloqueamos
+  if (!id && !password) {
+    showToast('La contraseña es obligatoria para un usuario nuevo.', 'warning');
+    return;
+  }
   
   try {
-    await apiFetch(`/api/users/${id}`, { method: 'PUT', body: JSON.stringify(body) });
-    showToast('Usuario actualizado exitosamente', 'success');
+    if (id) {
+      // Flujo de EDICIÓN (PUT)
+      await apiFetch(`/api/users/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+      showToast('Usuario actualizado exitosamente', 'success');
+      
+      // Si se edita a sí mismo, actualizar el UI
+      if (Number(id) === currentUser.id) {
+        currentUser.username = body.username;
+        currentUser.email = body.email;
+        currentUser.role = body.role;
+        localStorage.setItem('rcv_user', JSON.stringify(currentUser));
+        document.getElementById('userName').textContent = currentUser.username;
+        document.getElementById('userRole').textContent = currentUser.role;
+        document.getElementById('userAvatar').textContent = currentUser.username.charAt(0).toUpperCase();
+      }
+    } else {
+      // Flujo de CREACIÓN (POST)
+      await apiFetch('/api/users', { method: 'POST', body: JSON.stringify(body) });
+      showToast('Usuario creado exitosamente', 'success');
+    }
+    
     closeModal('userModal');
     loadUsers();
-    
-    // Update current user info if editing self
-    if (Number(id) === currentUser.id) {
-      currentUser.username = body.username;
-      currentUser.email = body.email;
-      currentUser.role = body.role;
-      localStorage.setItem('rcv_user', JSON.stringify(currentUser));
-      document.getElementById('userName').textContent = currentUser.username;
-      document.getElementById('userRole').textContent = currentUser.role;
-      document.getElementById('userAvatar').textContent = currentUser.username.charAt(0).toUpperCase();
-    }
   } catch (err) {
-    console.error('Error updating user:', err);
+    console.error('Error saving user:', err);
   }
 }
 

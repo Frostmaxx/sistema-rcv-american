@@ -16,6 +16,43 @@ router.get('/', (req, res) => {
   }
 });
 
+// NUEVA RUTA: Crear usuario (Solo accesible internamente)
+router.post('/', (req, res) => {
+  try {
+    // 1. Recibimos los datos enviados desde el formulario del Dashboard
+    const { username, email, password, role } = req.body;
+
+    // 2. Validación estricta: No permitimos campos vacíos
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'Usuario, email y contraseña son obligatorios.' });
+    }
+
+    // 3. Verificamos que no exista un clon en la base de datos
+    const existing = queryGet('SELECT id FROM users WHERE username = ? OR email = ?', [username, email]);
+    if (existing) {
+      return res.status(409).json({ error: 'El usuario o email ya existe.' });
+    }
+
+    // 4. Seguridad: Encriptamos la clave usando bcrypt antes de guardarla en SQLite
+    // El "10" es el nivel de salting (complejidad matemática de la encriptación)
+    const password_hash = bcrypt.hashSync(password, 10);
+    
+    // 5. Asignamos el rol. Si no envían uno, por defecto será 'admin'
+    const userRole = role || 'admin';
+
+    // 6. Guardamos en la base de datos (con active = 1 para que pueda loguearse)
+    const result = queryRun(
+      'INSERT INTO users (username, email, password_hash, role, active) VALUES (?, ?, ?, ?, 1)',
+      [username, email, password_hash, userRole]
+    );
+
+    // 7. Respondemos con éxito al Frontend
+    res.status(201).json({ message: 'Usuario creado exitosamente.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al crear usuario: ' + err.message });
+  }
+});
+
 // Update user
 router.put('/:id', (req, res) => {
   try {

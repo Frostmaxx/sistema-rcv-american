@@ -273,6 +273,14 @@
             <p>Gestión de cuentas de administrador</p>
           </div>
         </div>
+        <section class="content-section" id="section-users">
+        <div class="page-header">
+          <div>
+            <h1>Usuarios</h1>
+            <p>Gestión de cuentas de administrador</p>
+          </div>
+          <button class="btn btn-primary" onclick="openUserModal()">+ Nuevo Usuario</button>
+        </div>
         <div class="page-body">
           <div class="table-container">
             <div class="table-header">
@@ -459,7 +467,7 @@
   <div class="modal-overlay" id="userModal">
     <div class="modal">
       <div class="modal-header">
-        <h3>Editar Usuario</h3>
+        <h3 id="userModalTitle">Usuario</h3>
         <button class="modal-close" onclick="closeModal('userModal')">✕</button>
       </div>
       <div class="modal-body">
