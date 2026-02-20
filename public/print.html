@@ -952,7 +952,7 @@
     const API = '';
     const params = new URLSearchParams(window.location.search);
     const policyId = params.get('id');
-    const verifyNum = params.get('verify'); // NUEVA VARIABLE
+    const verifyNum = params.get('verify'); // VARIABLE DEL MODO PÚBLICO
     const initialFormat = params.get('format') || 'carta';
     let policyData = null;
 
@@ -980,7 +980,6 @@
     async function loadPolicy() {
       // === 📱 MODO PÚBLICO (Escaneo desde celular) ===
       if (verifyNum) {
-        // Ocultar botones de impresión
         const controls = document.getElementById('screenControls');
         if(controls) controls.style.display = 'none'; 
         
@@ -1020,7 +1019,181 @@
         window.close();
       }
     }
-    
+
+    // --- FUNCIÓN RESTAURADA: Rellena los datos en el HTML ---
+    function populateData(p) {
+      function setText(id, value) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = value;
+      }
+      
+      if (typeof LOGO !== 'undefined' && LOGO) {
+        const cartaLogoEl = document.getElementById('cartaLogoIcon'); if (cartaLogoEl) cartaLogoEl.innerHTML = `<img src="${LOGO}" alt="Logo" style="height:50px;width:auto;object-fit:contain">`;
+        const carnetLogoEl = document.getElementById('carnetLogoIcon'); if (carnetLogoEl) carnetLogoEl.innerHTML = `<img src="${LOGO}" alt="Logo" style="height:35px;width:auto;object-fit:contain">`;
+      }
+
+      if (typeof COOP !== 'undefined' && COOP) {
+        if (COOP.empresa) setText('headerCompany', COOP.empresa);
+        if (COOP.rif) setText('headerRif', 'RIF: ' + COOP.rif);
+      }
+
+      const displayPolicyNum = formatPolicyNumber(p.policy_number);
+      setText('cartaPolicyNum', displayPolicyNum);
+      setText('cartaPolicyNum_small', displayPolicyNum);
+      setText('cartaEmitido', formatDate(p.created_at));
+
+      setText('cartaClientName', p.client_name || '—');
+      setText('cartaClientCedula', p.client_cedula || '—');
+      setText('cartaClientTelefono', p.client_telefono || '—');
+      setText('cartaClientEmail', p.client_email || '—');
+      setText('cartaClientDireccion', p.client_direccion || '—');
+
+      setText('cartaVehTipo', vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo);
+      setText('cartaVehClase', vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo);
+      setText('cartaVehMarca', p.marca);
+      setText('cartaVehModelo', p.modelo);
+      setText('cartaVehAnio', p.anio);
+      setText('cartaVehPlaca', p.placa);
+      setText('cartaVehColor', p.color || '—');
+      setText('cartaVehSerial', p.serial_carroceria || '—');
+      setText('cartaVehSerialMotor', p.serial_motor || '—')
+
+      setText('cartaCobertura', covLabels[p.cobertura] || p.cobertura);
+      
+      const primaEl = document.getElementById('cartaPrima'); if (primaEl) primaEl.textContent = formatCurrency(p.prima);
+      const montoEl = document.getElementById('cartaMonto'); if (montoEl) montoEl.textContent = formatCurrency(p.prima);
+      setText('cartaFechaInicio', formatDate(p.fecha_inicio));
+      setText('cartaFechaFin', formatDate(p.fecha_fin));
+      setText('cartaNotas', p.notas || 'Sin observaciones.');
+
+      const cartaLegalEl = document.getElementById('cartaLegal');
+      if (cartaLegalEl && typeof LEGAL !== 'undefined') {
+          cartaLegalEl.innerHTML = `${LEGAL.registro}<br>`;
+      }
+
+      const name = p.client_name || '—';
+
+      const carnetPolicyNumEl = document.getElementById('carnetPolicyNum');
+      if (carnetPolicyNumEl) {
+        carnetPolicyNumEl.textContent = `Póliza Nro. ${p.policy_number}`; 
+      }
+
+      const carnetNumEl = document.getElementById('carnetPolicyNum'); if (carnetNumEl) carnetNumEl.textContent = displayPolicyNum;
+      setText('carnetClientName', name);
+      setText('carnetClientCedula', p.client_cedula || '—');
+      setText('carnetCoberturaFront', covLabels[p.cobertura] || p.cobertura);
+      setText('carnetFechaEmision', formatDate(p.created_at));
+      setText('carnetFechaVenc', formatDate(p.fecha_fin));
+      setText('carnetCoberturaBadge', covLabels[p.cobertura] || p.cobertura);
+      
+      setText('carnetVehTipo', vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo);
+      setText('carnetPlaca', p.placa);
+      setText('carnetMarcaModelo', `${p.marca} ${p.modelo}`);
+      setText('carnetAnio', p.anio);
+      setText('carnetColor', p.color || '—');
+      setText('carnetSerial', p.serial_carroceria || '—');
+      setText('carnetSerialMotor', p.serial_motor || '—');
+
+      const carnetLegalEl = document.getElementById('carnetLegal');
+      if (carnetLegalEl && typeof LEGALCARNET !== 'undefined') {
+          carnetLegalEl.innerHTML = `${LEGALCARNET.registro}`;
+      }
+
+      (function populateCoverages() {
+        function formatEuro(n){
+          if (n === undefined || n === null || n === '') return '—';
+          return '€ ' + Number(n).toLocaleString('es-VE', { minimumFractionDigits: 2 });
+        }
+
+        const body = document.getElementById('cartaCoverageBody');
+        if (!body) return;
+        body.innerHTML = '';
+
+        if (p.garantias && Array.isArray(p.garantias) && p.garantias.length) {
+          p.garantias.forEach(g => {
+            const tr = document.createElement('tr');
+            const tdName = document.createElement('td');
+            tdName.textContent = g.beneficio || g.nombre || g.label || '—';
+            const tdAmt = document.createElement('td');
+            tdAmt.className = 'coverage-amount';
+            tdAmt.textContent = (g.monto !== undefined && g.monto !== null) ? formatEuro(g.monto) : (g.cobertura || '—');
+            tr.appendChild(tdName);
+            tr.appendChild(tdAmt);
+            body.appendChild(tr);
+          });
+        } else {
+          const defaults = [
+            ['RESPONSABILIDAD CIVIL-DAÑOS A COSAS', 2000],
+            ['RESPONSABILIDAD CIVIL-DAÑOS A PERSONAS', 2505],
+            ['EXCESO DE GARANTÍA', 250],
+            ['ASISTENCIA JURÍDICA', 250],
+            ['MUERTE DEL CONDUCTOR Y/O PASAJEROS', 500],
+            ['INVALIDEZ DEL CONDUCTOR Y/O PASAJEROS', 250],
+            ['GASTOS MÉDICOS', 250],
+            ['GASTOS FUNERARIOS', 250]
+          ];
+          defaults.forEach(([name, amt]) => {
+            const tr = document.createElement('tr');
+            const tdName = document.createElement('td'); tdName.textContent = name;
+            const tdAmt = document.createElement('td'); tdAmt.className = 'coverage-amount'; tdAmt.textContent = formatEuro(amt);
+            tr.appendChild(tdName); tr.appendChild(tdAmt);
+            body.appendChild(tr);
+          });
+        }
+
+        const totalEl = document.getElementById('cartaMonto');
+        if (totalEl) {
+          if (p.prima) totalEl.textContent = formatEuro(p.prima);
+          else {
+            const sum = (p.garantias && p.garantias.length) ? p.garantias.reduce((s, g) => s + (Number(g.monto) || 0), 0) : defaults.reduce((s, a) => s + Number(a[1]), 0);
+            totalEl.textContent = formatEuro(sum);
+          }
+        }
+      })();
+
+      generateQRCodes(p);
+    }
+
+    // --- FUNCIÓN RESTAURADA: Genera el código QR público ---
+    function generateQRCodes(policy) {
+      const formatted = formatPolicyNumber(policy.policy_number);
+      
+      // MODO PÚBLICO: enlace con ?verify=
+      const qrData = `${window.location.origin}/print.html?verify=${formatted}`;
+
+      const cartaQR = qrcode(0, 'M');
+      cartaQR.addData(qrData);
+      cartaQR.make();
+      const cartaImg = cartaQR.createDataURL(4, 0); 
+      const cartaImgEl = document.getElementById('cartaQR');
+      if (cartaImgEl) cartaImgEl.src = cartaImg;
+
+      const carnetQR = qrcode(0, 'M');
+      carnetQR.addData(qrData);
+      carnetQR.make();
+      const carnetImg = carnetQR.createDataURL(3, 0); 
+      const carnetImgEl = document.getElementById('carnetQR');
+      if (carnetImgEl) carnetImgEl.src = carnetImg;
+    }
+
+    // --- FUNCIONES RESTAURADAS: Controles de formato e impresión ---
+    function showFormat(format) {
+      const carta = document.getElementById('printCarta');
+      if (carta) carta.classList.remove('hidden');
+      if (format === 'carta' || format === 'carnet') {
+        document.body.className = 'mode-carta';
+        const fmt = document.getElementById('formatName'); if (fmt) fmt.textContent = 'Carta (incluye Carnet)';
+      } else {
+        const fmt = document.getElementById('formatName'); if (fmt) fmt.textContent = 'Carta (incluye Carnet)';
+      }
+    }
+
+    function switchAndPrint(format) {
+      showFormat(format);
+      setTimeout(() => window.print(), 300);
+    }
+
     loadPolicy();
   </script>
 </body>
