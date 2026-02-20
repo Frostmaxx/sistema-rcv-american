@@ -38,8 +38,10 @@ async function startServer() {
   });
   // ==========================================
 
-  // Rutas protegidas existentes...
-  app.use('/api/auth', authRoutes);
+    // Rutas protegidas existentes...
+    app.use('/api/auth', require('./routes/auth'));
+    app.use('/api/clients', require('./routes/clients'));
+    app.use('/api/policies', require('./routes/policies'));
 
   // ==========================================
   // 🛡️ RUTA PÚBLICA DE VERIFICACIÓN (CÓDIGO QR)
