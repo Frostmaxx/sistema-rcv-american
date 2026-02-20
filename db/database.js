@@ -1,6 +1,7 @@
 const initSqlJs = require('sql.js');
 const path = require('path');
 const fs = require('fs');
+const bcrypt = require('bcryptjs');
 
 const DB_PATH = path.resolve(process.env.DB_PATH || './db/rcv.db');
 const dbDir = path.dirname(DB_PATH);
@@ -122,6 +123,30 @@ async function initDatabase() {
   try { db.run('CREATE INDEX IF NOT EXISTS idx_policies_estado ON policies(estado)'); } catch(e) {}
   try { db.run('CREATE INDEX IF NOT EXISTS idx_policies_number ON policies(policy_number)'); } catch(e) {}
   try { db.run('CREATE INDEX IF NOT EXISTS idx_coverages_nombre ON coverages(nombre)'); } catch(e) {}
+
+  // ==========================================
+  // AUTO-SIEMBRA: GENERAR ADMIN SI LA DB ESTÁ VACÍA
+  // ==========================================
+  try {
+    const userCheck = db.exec("SELECT COUNT(*) FROM users");
+    const userCount = userCheck.length > 0 ? userCheck[0].values[0][0] : 0;
+
+    if (userCount === 0) {
+      const password_hash = bcrypt.hashSync('admin123', 10);
+      db.run(
+        "INSERT INTO users (username, email, password_hash, role, active) VALUES ('admin', 'admin@rcv.com', ?, 'superadmin', 1)",
+        [password_hash]
+      );
+      console.log('✅ Auto-Siembra: Base de datos vacía. Usuario [admin] / [admin123] creado con éxito.');
+    }
+  } catch (err) {
+    console.log('⚠️ Omitiendo auto-siembra de usuarios:', err.message);
+  }
+  // ==========================================
+
+  saveDb();
+  return db;
+}
 
   saveDb();
   return db;
