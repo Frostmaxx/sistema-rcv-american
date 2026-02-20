@@ -89,7 +89,7 @@ router.get('/:id', (req, res) => {
   try {
     if (req.params.id === 'config') return res.status(400).json({ error: 'Use /config/pricing' });
     const policy = queryGet(
-      `SELECT p.*, c.nombre || ' ' || c.apellido as client_name, c.cedula as client_cedula, c.telefono as client_telefono, c.email as client_email
+      `SELECT p.*, c.nombre || ' ' || c.apellido as client_name, c.cedula as client_cedula, c.telefono as client_telefono, c.email as client_email, c.direccion as client_direccion
        FROM policies p JOIN clients c ON p.client_id = c.id WHERE p.id = ?`,
       [req.params.id]
     );
