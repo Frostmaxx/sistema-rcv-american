@@ -484,7 +484,14 @@ async function savePolicy(e) {
       estado: 'activa',
       cobertura: document.getElementById('policyCobertura').value,
       fecha_fin: document.getElementById('policyFechaFin').value,
-      notas: document.getElementById('policyNotas').value
+      notas: document.getElementById('policyNotas').value,
+      placa: document.getElementById('policyPlaca').value,
+      marca: document.getElementById('policyMarca').value,
+      modelo: document.getElementById('policyModelo').value,
+      anio: Number(document.getElementById('policyAnio').value),
+      color: document.getElementById('policyColor').value,
+      serial_carroceria: document.getElementById('policySerial').value,
+      serial_motor: document.getElementById('policySerialMotor').value
     };
     
     try {

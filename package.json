@@ -4,8 +4,8 @@
   "description": "Sistema Web para Seguro de Responsabilidad Civil Vehicular",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node server.js port-- 4000",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
