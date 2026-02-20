@@ -123,44 +123,6 @@ async function initDatabase() {
   try { db.run('CREATE INDEX IF NOT EXISTS idx_policies_number ON policies(policy_number)'); } catch(e) {}
   try { db.run('CREATE INDEX IF NOT EXISTS idx_coverages_nombre ON coverages(nombre)'); } catch(e) {}
 
-  // Migration: remove old CHECK constraint on cobertura if policies table exists with it
-  try {
-    const tableInfo = db.exec("SELECT sql FROM sqlite_master WHERE type='table' AND name='policies'");
-    if (tableInfo.length > 0 && tableInfo[0].values[0][0].includes("CHECK(cobertura IN")) {
-      // Recreate table without the CHECK constraint on cobertura
-      db.run('ALTER TABLE policies RENAME TO policies_old');
-      db.run(`
-        CREATE TABLE policies (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          policy_number TEXT UNIQUE NOT NULL,
-          client_id INTEGER NOT NULL,
-          tipo_vehiculo TEXT NOT NULL CHECK(tipo_vehiculo IN ('automovil', 'camioneta', 'moto', 'camion', 'bus')),
-          placa TEXT NOT NULL,
-          marca TEXT NOT NULL,
-          modelo TEXT NOT NULL,
-          anio INTEGER NOT NULL,
-          color TEXT,
-          serial_carroceria TEXT,
-          cobertura TEXT NOT NULL,
-          monto REAL NOT NULL,
-          prima REAL NOT NULL,
-          fecha_inicio DATE NOT NULL,
-          fecha_fin DATE NOT NULL,
-          estado TEXT DEFAULT 'activa' CHECK(estado IN ('activa', 'vencida', 'cancelada', 'pendiente')),
-          notas TEXT,
-          created_by INTEGER,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE RESTRICT,
-          FOREIGN KEY (created_by) REFERENCES users(id)
-        )
-      `);
-      db.run('INSERT INTO policies SELECT * FROM policies_old');
-      db.run('DROP TABLE policies_old');
-      console.log('✅ Migración: CHECK constraint de cobertura eliminado');
-    }
-  } catch(e) { /* no old table to migrate */ }
-
   saveDb();
   return db;
 }
