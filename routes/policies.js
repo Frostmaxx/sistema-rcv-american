@@ -120,7 +120,7 @@ router.post('/', (req, res) => {
     // 2. Inyectamos serial_motor en la consulta SQL
     const result = queryRun(
       `INSERT INTO policies (policy_number, client_id, tipo_vehiculo, placa, marca, modelo, anio, color, serial_carroceria, serial_motor, cobertura, monto, prima, fecha_inicio, fecha_fin, estado, notas, created_by)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'activa', ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'activa', ?, ?)`,
       [policy_number, client_id, tipo_vehiculo, placa.toUpperCase(), marca, modelo, anio, color || null, serial_carroceria || null, serial_motor || null, cobertura, monto, prima, fecha_inicio, fecha_fin, notas || null, req.user.id]
     );
 
