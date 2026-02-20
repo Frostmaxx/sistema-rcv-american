@@ -104,6 +104,7 @@ router.get('/:id', (req, res) => {
 // Create policy
 router.post('/', (req, res) => {
   try {
+    // 1. Extraemos TODOS los datos, incluyendo serial_motor
     const { client_id, tipo_vehiculo, placa, marca, modelo, anio, color, serial_carroceria, serial_motor, cobertura, fecha_inicio, fecha_fin, notas } = req.body;
 
     if (!client_id || !tipo_vehiculo || !placa || !marca || !modelo || !anio || !cobertura || !fecha_inicio || !fecha_fin) {
@@ -116,6 +117,7 @@ router.post('/', (req, res) => {
     const policy_number = generatePolicyNumber();
     const { prima, monto } = getCoveragePricing(cobertura);
 
+    // 2. Inyectamos serial_motor en la consulta SQL
     const result = queryRun(
       `INSERT INTO policies (policy_number, client_id, tipo_vehiculo, placa, marca, modelo, anio, color, serial_carroceria, serial_motor, cobertura, monto, prima, fecha_inicio, fecha_fin, estado, notas, created_by)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'activa', ?, ?)`,
@@ -135,9 +137,9 @@ router.put('/:id', (req, res) => {
     const policy = queryGet('SELECT * FROM policies WHERE id = ?', [req.params.id]);
     if (!policy) return res.status(404).json({ error: 'Póliza no encontrada.' });
 
-    const { estado, notas, cobertura, fecha_fin } = req.body;
+    // Incluimos los campos del vehículo para que puedan ser editados
+    const { estado, notas, cobertura, fecha_fin, placa, marca, modelo, anio, color, serial_carroceria, serial_motor } = req.body;
 
-    // Recalculate pricing if coverage changes
     let newPrima = policy.prima;
     let newMonto = policy.monto;
     if (cobertura && cobertura !== policy.cobertura) {
@@ -149,7 +151,11 @@ router.put('/:id', (req, res) => {
     }
 
     queryRun(
-      'UPDATE policies SET estado = ?, notas = ?, cobertura = ?, fecha_fin = ?, prima = ?, monto = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      `UPDATE policies SET 
+        estado = ?, notas = ?, cobertura = ?, fecha_fin = ?, prima = ?, monto = ?,
+        placa = ?, marca = ?, modelo = ?, anio = ?, color = ?, serial_carroceria = ?, serial_motor = ?,
+        updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?`,
       [
         estado || policy.estado,
         notas !== undefined ? notas : policy.notas,
@@ -157,6 +163,13 @@ router.put('/:id', (req, res) => {
         fecha_fin || policy.fecha_fin,
         newPrima,
         newMonto,
+        placa ? placa.toUpperCase() : policy.placa,
+        marca || policy.marca,
+        modelo || policy.modelo,
+        anio || policy.anio,
+        color || policy.color,
+        serial_carroceria !== undefined ? serial_carroceria : policy.serial_carroceria,
+        serial_motor !== undefined ? serial_motor : policy.serial_motor,
         req.params.id
       ]
     );
