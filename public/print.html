@@ -1153,14 +1153,8 @@
     }
 
     function generateQRCodes(policy) {
-      // QR data contains verification info
-      const formatted = formatPolicyNumber(policy.policy_number);
-      const qrData = JSON.stringify({
-        poliza: formatted,
-        estado: policy.estado,
-        vence: policy.fecha_fin,
-        verificar: `${window.location.origin}/verify/${formatted}`
-      });
+      // Reemplazamos el JSON por una URL web directa al comprobante
+      const qrData = `${window.location.origin}/print.html?id=${policy.id}`;
 
       // Generate QR for Carta (larger)
       const cartaQR = qrcode(0, 'M');
@@ -1178,7 +1172,7 @@
       const carnetImgEl = document.getElementById('carnetQR');
       if (carnetImgEl) carnetImgEl.src = carnetImg;
     }
-
+    
     function showFormat(format) {
       const carta = document.getElementById('printCarta');
 
