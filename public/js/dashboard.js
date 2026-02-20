@@ -455,6 +455,7 @@ async function openPolicyModal(policy = null) {
     document.getElementById('policyAnio').value = policy.anio;
     document.getElementById('policyColor').value = policy.color || '';
     document.getElementById('policySerial').value = policy.serial_carroceria || '';
+    document.getElementById('policySerialMotor').value = policy.serial_motor || '';
     document.getElementById('policyCobertura').value = policy.cobertura;
     document.getElementById('policyFechaInicio').value = policy.fecha_inicio;
     document.getElementById('policyFechaFin').value = policy.fecha_fin;

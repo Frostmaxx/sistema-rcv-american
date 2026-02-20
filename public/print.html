@@ -1197,37 +1197,6 @@
       setTimeout(() => window.print(), 300);
     }
 
-    // --- Debug panel: intercept console messages and show in-page (useful to capture browser errors) ---
-    (function setupDebugPanel(){
-      try {
-        const panel = document.createElement('div');
-        panel.id = 'debugPanel';
-        panel.style.cssText = 'position:fixed;right:1rem;bottom:1rem;z-index:99999;max-width:520px;max-height:40vh;overflow:auto;background:rgba(0,0,0,0.78);color:#fff;padding:0.5rem;border-radius:8px;font-family:Inter,Arial,Helvetica,sans-serif;font-size:12px;display:none;box-shadow:0 6px 24px rgba(0,0,0,0.3)';
-
-        const header = document.createElement('div');
-        header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:6px';
-        const title = document.createElement('div'); title.textContent = 'Console'; title.style.fontWeight = '700';
-        const btn = document.createElement('button'); btn.textContent = 'Mostrar'; btn.style.cssText = 'background:#111827;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer;font-weight:600';
-        btn.onclick = () => { panel.style.display = panel.style.display === 'none' ? 'block' : 'none'; btn.textContent = panel.style.display === 'none' ? 'Mostrar' : 'Ocultar'; };
-        header.appendChild(title); header.appendChild(btn);
-        panel.appendChild(header);
-
-        const list = document.createElement('div'); list.id = 'debugList'; panel.appendChild(list);
-        document.body.appendChild(panel);
-
-        const orig = { log: console.log.bind(console), warn: console.warn.bind(console), error: console.error.bind(console), info: console.info.bind(console) };
-        function fmtArg(a){ try { return (typeof a === 'object' ? JSON.stringify(a) : String(a)); } catch(e){ return String(a); } }
-        function pushMsg(type, args){ const el = document.createElement('div'); el.style.padding = '2px 0'; el.style.lineHeight = '1.1'; if(type==='error'){ el.style.color = '#ffb4ab'; } else if(type==='warn'){ el.style.color = '#ffe9b3'; el.style.color = '#ffd580'; } else if(type==='info'){ el.style.color = '#cfe8ff'; } else { el.style.color = '#e6eef8'; }
-          const txt = '['+type+'] ' + Array.from(args).map(fmtArg).join(' ');
-          el.textContent = txt; list.appendChild(el); list.scrollTop = list.scrollHeight; }
-
-        console.log = function(...a){ pushMsg('log', a); orig.log(...a); };
-        console.warn = function(...a){ pushMsg('warn', a); orig.warn(...a); };
-        console.error = function(...a){ pushMsg('error', a); orig.error(...a); };
-        console.info = function(...a){ pushMsg('info', a); orig.info(...a); };
-      } catch (e) { /* ignore debug panel failures */ }
-    })();
-
     loadPolicy();
   </script>
 </body>
