@@ -148,10 +148,6 @@ async function initDatabase() {
   return db;
 }
 
-  saveDb();
-  return db;
-}
-
 function closeDatabase() {
   try {
     if (db) {
