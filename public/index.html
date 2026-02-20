@@ -26,54 +26,28 @@
 
           <div id="authMessage"></div>
 
-          <div class="auth-tabs">
-            <button
-              class="auth-tab active"
-              data-tab="login"
-              onclick="switchTab('login')"
-            >
-              Iniciar Sesión
-            </button>
-            <button
-              class="auth-tab"
-              data-tab="register"
-              onclick="switchTab('register')"
-            >
-              Registrarse
-            </button>
-          </div>
+          <div id="authMessage"></div>
 
-          <!-- Login Form -->
           <form id="loginForm" onsubmit="handleLogin(event)">
             <div class="form-group">
               <label for="loginUser">Usuario</label>
-              <input
-                type="text"
-                id="loginUser"
-                class="form-control"
-                placeholder="Ingrese su usuario"
-                required
-              />
+              <input type="text" id="loginUser" class="form-control" placeholder="Ingrese su usuario" required />
             </div>
             <div class="form-group">
               <label for="loginPass">Contraseña</label>
-              <input
-                type="password"
-                id="loginPass"
-                class="form-control"
-                placeholder="Ingrese su contraseña"
-                required
-              />
+              <input type="password" id="loginPass" class="form-control" placeholder="Ingrese su contraseña" required />
             </div>
-            <button
-              type="submit"
-              class="btn btn-primary btn-block"
-              id="loginBtn"
-            >
+            <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
               Iniciar Sesión
             </button>
+            
+            <div style="margin-top: 1rem; text-align: center;">
+              <button type="button" class="btn btn-secondary btn-block" onclick="alert('Para problemas de acceso o recuperación de clave, comuníquese con el departamento de TI: soporte@tuempresa.com')" style="background: transparent; border: 1px solid var(--border); color: var(--gray);">
+                ¿Problemas para ingresar?
+              </button>
+            </div>
           </form>
-
+          
           <!-- Register Form -->
           <form
             id="registerForm"
