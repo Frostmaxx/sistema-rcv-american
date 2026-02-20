@@ -504,6 +504,7 @@ async function savePolicy(e) {
       anio: Number(document.getElementById('policyAnio').value),
       color: document.getElementById('policyColor').value,
       serial_carroceria: document.getElementById('policySerial').value,
+      serial_motor: document.getElementById('policySerialMotor').value,
       cobertura: document.getElementById('policyCobertura').value,
       fecha_inicio: document.getElementById('policyFechaInicio').value,
       fecha_fin: document.getElementById('policyFechaFin').value,
