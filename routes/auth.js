@@ -1,44 +1,44 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { queryGet, queryRun } = require('../db/database');
+const bcrypt = require('bcryptjs');
+const { queryGet } = require('../db/database');
 
 const router = express.Router();
 
-// Login
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
+    const user = await queryGet('SELECT * FROM users WHERE username = ? AND active = 1', [username]);
 
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Usuario y contraseña son obligatorios.' });
+    if (!user || !bcrypt.compareSync(password, user.password_hash)) {
+      return res.status(401).json({ error: 'Credenciales inválidas o usuario inactivo' });
     }
 
-    const user = queryGet('SELECT * FROM users WHERE username = ? AND active = 1', [username]);
-    if (!user) {
-      return res.status(401).json({ error: 'Credenciales inválidas.' });
-    }
+    const token = jwt.sign(
+      { id: user.id, username: user.username, role: user.role },
+      process.env.JWT_SECRET || 'secret',
+      { expiresIn: '12h' }
+    );
 
-    const validPassword = bcrypt.compareSync(password, user.password_hash);
-    if (!validPassword) {
-      return res.status(401).json({ error: 'Credenciales inválidas.' });
-    }
-
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
-
-    res.json({
-      message: 'Inicio de sesión exitoso.',
-      token,
-      user: { id: user.id, username: user.username, email: user.email, role: user.role }
-    });
+    res.json({ token, user: { id: user.id, username: user.username, role: user.role } });
   } catch (err) {
-    res.status(500).json({ error: 'Error al iniciar sesión: ' + err.message });
+    res.status(500).json({ error: 'Error en el servidor: ' + err.message });
   }
 });
 
-// Get current user
-router.get('/me', require('../middleware/auth').authenticateToken, (req, res) => {
-  res.json({ user: req.user });
+router.get('/me', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token' });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+    const user = await queryGet('SELECT id, username, role FROM users WHERE id = ? AND active = 1', [decoded.id]);
+
+    if (!user) return res.status(401).json({ error: 'Usuario no encontrado' });
+    res.json({ user });
+  } catch (err) {
+    res.status(401).json({ error: 'Token inválido' });
+  }
 });
 
 module.exports = router;

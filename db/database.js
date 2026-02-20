@@ -1,205 +1,148 @@
-const initSqlJs = require('sql.js');
-const path = require('path');
-const fs = require('fs');
+const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 
-const DB_PATH = path.resolve(process.env.DB_PATH || './db/rcv.db');
-const dbDir = path.dirname(DB_PATH);
-
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir, { recursive: true });
-}
-
-let db = null;
-let SQL_LIB = null;
+let pool;
 
 async function initDatabase() {
-  if (!SQL_LIB) {
-    SQL_LIB = await initSqlJs();
-  }
+  // 1. Crear el pool de conexiones a MySQL
+  pool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 3306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'rcv_db',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+  });
 
-  // Load existing DB or create new
-  if (fs.existsSync(DB_PATH)) {
-    const buffer = fs.readFileSync(DB_PATH);
-    db = new SQL_LIB.Database(buffer);
-  } else {
-    db = new SQL_LIB.Database();
-  }
+  console.log('🔄 Conectando a MySQL...');
 
-  db.run('PRAGMA foreign_keys = ON');
-
-  db.run(`
+  // 2. Crear Tablas (Sintaxis MySQL)
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
-      role TEXT DEFAULT 'admin' CHECK(role IN ('admin', 'superadmin')),
-      active INTEGER DEFAULT 1,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      username VARCHAR(255) UNIQUE NOT NULL,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password_hash VARCHAR(255) NOT NULL,
+      role VARCHAR(50) DEFAULT 'admin',
+      active TINYINT DEFAULT 1,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `);
 
-  db.run(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS clients (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      cedula TEXT UNIQUE NOT NULL,
-      nombre TEXT NOT NULL,
-      apellido TEXT NOT NULL,
-      telefono TEXT,
-      email TEXT,
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      cedula VARCHAR(50) UNIQUE NOT NULL,
+      nombre VARCHAR(255) NOT NULL,
+      apellido VARCHAR(255) NOT NULL,
+      telefono VARCHAR(50),
+      email VARCHAR(255),
       direccion TEXT,
-      ciudad TEXT,
-      estado_region TEXT,
+      ciudad VARCHAR(100),
+      estado_region VARCHAR(100),
       fecha_nacimiento DATE,
-      active INTEGER DEFAULT 1,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      active TINYINT DEFAULT 1,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `);
 
-  db.run(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS policies (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      policy_number TEXT UNIQUE NOT NULL,
-      client_id INTEGER NOT NULL,
-      tipo_vehiculo TEXT NOT NULL CHECK(tipo_vehiculo IN ('automovil', 'camioneta', 'moto', 'camion', 'bus')),
-      placa TEXT NOT NULL,
-      marca TEXT NOT NULL,
-      modelo TEXT NOT NULL,
-      anio INTEGER NOT NULL,
-      color TEXT,
-      serial_carroceria TEXT,
-      serial_motor TEXT,
-      cobertura TEXT NOT NULL,
-      monto REAL NOT NULL,
-      prima REAL NOT NULL,
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      policy_number VARCHAR(50) UNIQUE NOT NULL,
+      client_id INT NOT NULL,
+      tipo_vehiculo VARCHAR(50) NOT NULL,
+      placa VARCHAR(20) NOT NULL,
+      marca VARCHAR(100) NOT NULL,
+      modelo VARCHAR(100) NOT NULL,
+      anio INT NOT NULL,
+      color VARCHAR(50),
+      serial_carroceria VARCHAR(100),
+      serial_motor VARCHAR(100),
+      cobertura VARCHAR(100) NOT NULL,
+      monto DECIMAL(12,2) NOT NULL,
+      prima DECIMAL(12,2) NOT NULL,
       fecha_inicio DATE NOT NULL,
       fecha_fin DATE NOT NULL,
-      estado TEXT DEFAULT 'activa' CHECK(estado IN ('activa', 'vencida', 'cancelada', 'pendiente')),
+      estado VARCHAR(50) DEFAULT 'activa',
       notas TEXT,
-      created_by INTEGER,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE RESTRICT,
+      created_by INT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (client_id) REFERENCES clients(id),
       FOREIGN KEY (created_by) REFERENCES users(id)
     )
   `);
 
-  // Coverages table for dynamic coverage management
-  db.run(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS coverages (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nombre TEXT UNIQUE NOT NULL,
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      nombre VARCHAR(100) UNIQUE NOT NULL,
       descripcion TEXT,
-      prima REAL DEFAULT 0,
-      cob_1_nombre TEXT, cob_1_monto REAL DEFAULT 0,
-      cob_2_nombre TEXT, cob_2_monto REAL DEFAULT 0,
-      cob_3_nombre TEXT, cob_3_monto REAL DEFAULT 0,
-      cob_4_nombre TEXT, cob_4_monto REAL DEFAULT 0,
-      cob_5_nombre TEXT, cob_5_monto REAL DEFAULT 0,
-      cob_6_nombre TEXT, cob_6_monto REAL DEFAULT 0,
-      cob_7_nombre TEXT, cob_7_monto REAL DEFAULT 0,
-      cob_8_nombre TEXT, cob_8_monto REAL DEFAULT 0,
-      cob_9_nombre TEXT, cob_9_monto REAL DEFAULT 0,
-      cob_10_nombre TEXT, cob_10_monto REAL DEFAULT 0,
-      active INTEGER DEFAULT 1,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      prima DECIMAL(12,2) DEFAULT 0,
+      cob_1_nombre VARCHAR(255), cob_1_monto DECIMAL(12,2) DEFAULT 0,
+      cob_2_nombre VARCHAR(255), cob_2_monto DECIMAL(12,2) DEFAULT 0,
+      cob_3_nombre VARCHAR(255), cob_3_monto DECIMAL(12,2) DEFAULT 0,
+      cob_4_nombre VARCHAR(255), cob_4_monto DECIMAL(12,2) DEFAULT 0,
+      cob_5_nombre VARCHAR(255), cob_5_monto DECIMAL(12,2) DEFAULT 0,
+      cob_6_nombre VARCHAR(255), cob_6_monto DECIMAL(12,2) DEFAULT 0,
+      cob_7_nombre VARCHAR(255), cob_7_monto DECIMAL(12,2) DEFAULT 0,
+      cob_8_nombre VARCHAR(255), cob_8_monto DECIMAL(12,2) DEFAULT 0,
+      cob_9_nombre VARCHAR(255), cob_9_monto DECIMAL(12,2) DEFAULT 0,
+      cob_10_nombre VARCHAR(255), cob_10_monto DECIMAL(12,2) DEFAULT 0,
+      active TINYINT DEFAULT 1,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `);
 
-  // Sequences table for policy number generation
-  db.run(`
+  await pool.query(`
     CREATE TABLE IF NOT EXISTS sequences (
-      name TEXT PRIMARY KEY,
-      value INTEGER DEFAULT 0
+      name VARCHAR(50) PRIMARY KEY,
+      value INT DEFAULT 0
     )
   `);
 
-  try { db.run('CREATE INDEX IF NOT EXISTS idx_clients_cedula ON clients(cedula)'); } catch(e) {}
-  try { db.run('CREATE INDEX IF NOT EXISTS idx_policies_client ON policies(client_id)'); } catch(e) {}
-  try { db.run('CREATE INDEX IF NOT EXISTS idx_policies_estado ON policies(estado)'); } catch(e) {}
-  try { db.run('CREATE INDEX IF NOT EXISTS idx_policies_number ON policies(policy_number)'); } catch(e) {}
-  try { db.run('CREATE INDEX IF NOT EXISTS idx_coverages_nombre ON coverages(nombre)'); } catch(e) {}
-
-  // ==========================================
-  // AUTO-SIEMBRA: GENERAR ADMIN SI LA DB ESTÁ VACÍA
-  // ==========================================
+  // 3. Auto-Siembra
   try {
-    const userCheck = db.exec("SELECT COUNT(*) FROM users");
-    const userCount = userCheck.length > 0 ? userCheck[0].values[0][0] : 0;
-
-    if (userCount === 0) {
+    const [rows] = await pool.query("SELECT COUNT(*) as count FROM users");
+    if (rows[0].count === 0) {
       const password_hash = bcrypt.hashSync('admin123', 10);
-      db.run(
+      await pool.query(
         "INSERT INTO users (username, email, password_hash, role, active) VALUES ('admin', 'admin@rcv.com', ?, 'superadmin', 1)",
         [password_hash]
       );
-      console.log('✅ Auto-Siembra: Base de datos vacía. Usuario [admin] / [admin123] creado con éxito.');
+      console.log('✅ Auto-Siembra: Base de datos vacía. Usuario [admin] / [admin123] creado.');
     }
   } catch (err) {
-    console.log('⚠️ Omitiendo auto-siembra de usuarios:', err.message);
+    console.log('⚠️ Omitiendo auto-siembra:', err.message);
   }
-  // ==========================================
 
-  saveDb();
-  return db;
+  return pool;
+}
+
+// 4. Funciones Helper Asíncronas
+async function queryAll(sql, params = []) {
+  const [rows] = await pool.query(sql, params);
+  return rows;
+}
+
+async function queryGet(sql, params = []) {
+  const [rows] = await pool.query(sql, params);
+  return rows.length > 0 ? rows[0] : null;
+}
+
+async function queryRun(sql, params = []) {
+  const [result] = await pool.execute(sql, params);
+  return { lastInsertRowid: result.insertId, changes: result.affectedRows };
 }
 
 function closeDatabase() {
-  try {
-    if (db) {
-      try { saveDb(); } catch(e) {}
-      try { if (typeof db.close === 'function') db.close(); } catch(e) {}
-      db = null;
-    }
-  } catch (e) { /* ignore close errors */ }
+  if (pool) pool.end();
 }
 
-function saveDb() {
-  if (db) {
-    const data = db.export();
-    const buffer = Buffer.from(data);
-    fs.writeFileSync(DB_PATH, buffer);
-  }
-}
-
-// Ensure DB is closed on process exit to avoid libuv handle assertion on Windows
-process.on('beforeExit', () => { try { closeDatabase(); } catch(e) {} });
-process.on('exit', () => { try { closeDatabase(); } catch(e) {} });
-
-// Helper: run query and return results as array of objects
-function queryAll(sql, params = []) {
-  const stmt = db.prepare(sql);
-  stmt.bind(params);
-  const results = [];
-  try {
-    while (stmt.step()) {
-      results.push(stmt.getAsObject());
-    }
-  } finally {
-    stmt.free();
-  }
-  return results;
-}
-
-// Helper: get single row
-function queryGet(sql, params = []) {
-  const results = queryAll(sql, params);
-  return results.length > 0 ? results[0] : null;
-}
-
-// Helper: run INSERT/UPDATE/DELETE
-function queryRun(sql, params = []) {
-  db.run(sql, params);
-  // Capture these IMMEDIATELY after db.run, before any other queries
-  const lastIdResult = db.exec("SELECT last_insert_rowid() as id");
-  const lastId = lastIdResult.length > 0 ? Number(lastIdResult[0].values[0][0]) : 0;
-  const changes = db.getRowsModified();
-  saveDb();
-  return { lastInsertRowid: lastId, changes };
-}
-
-module.exports = { initDatabase, queryAll, queryGet, queryRun, getDb: () => db, closeDatabase };
+module.exports = { initDatabase, queryAll, queryGet, queryRun, closeDatabase };
