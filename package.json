@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "description": "Sistema Web para Seguro de Responsabilidad Civil Vehicular",
   "main": "server.js",
+  "engines": {
+  "node": ">=18.0.0"
+  },
+
+  "scripts": {
+    "start": "node server.js"
   },
 
   "dependencies": {
