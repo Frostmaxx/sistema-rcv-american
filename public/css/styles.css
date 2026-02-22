@@ -1303,6 +1303,108 @@ textarea.form-control {
     align-items: stretch;
     text-align: center;
     gap: 1rem;
+
+  /* ============================================
+     ✨ CARDS DE USUARIOS (MÓVIL) CON SEMÁFOROS
+     ============================================ */
+  /* 1. Rompemos la estructura de tabla solo en esta sección */
+  #section-users .data-table {
+    background: transparent;
+    border: none;
+    overflow: visible;
+  }
+  
+  #section-users .data-table thead {
+    display: none; /* Oculta la cabecera */
+  }
+
+  #section-users .data-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* 2. Transformamos la Fila en una Tarjeta (Card) */
+  #usersTableBody tr {
+    display: flex;
+    flex-wrap: wrap;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+  }
+
+  #usersTableBody td {
+    display: block;
+    border: none;
+    padding: 0;
+    white-space: normal;
+  }
+
+  /* 3. Nombre de Usuario (Ocupa todo el ancho arriba) */
+  #usersTableBody td:nth-child(1) {
+    width: 100%;
+    font-size: 1.15rem;
+    margin-bottom: 0.15rem;
+  }
+
+  /* 4. Correo Electrónico (Debajo del nombre) */
+  #usersTableBody td:nth-child(2) {
+    width: 100%;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  /* 5. Posicionamiento del Rol y Estado (En línea) */
+  #usersTableBody td:nth-child(3),
+  #usersTableBody td:nth-child(4) {
+    width: auto;
+    margin-right: 1.25rem;
+  }
+
+  /* 🌟 MAGIA: Conversión de pastillas a puntos LED 🌟 */
+  #usersTableBody .badge {
+    background: transparent !important;
+    padding: 0;
+    color: var(--text-primary) !important;
+    font-weight: 500;
+  }
+
+  #usersTableBody .badge::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 0.4rem;
+  }
+
+  /* Asignación de colores brillantes a cada punto */
+  #usersTableBody .badge-activa::before { background: var(--success); box-shadow: 0 0 8px var(--success-soft); }
+  #usersTableBody .badge-cancelada::before { background: var(--text-muted); }
+  #usersTableBody .badge-admin::before { background: var(--accent); box-shadow: 0 0 8px var(--accent-soft); }
+  #usersTableBody .badge-superadmin::before { background: #a78bfa; box-shadow: 0 0 8px rgba(167, 139, 250, 0.5); }
+  #usersTableBody .badge-register::before { background: var(--info); box-shadow: 0 0 8px var(--info-soft); }
+
+  /* 6. Fecha de registro (Se oculta en móvil para limpiar el diseño) */
+  #usersTableBody td:nth-child(5) {
+    display: none;
+  }
+
+  /* 7. Botones de Acción (Separados por una línea sutil) */
+  #usersTableBody td:nth-child(6) {
+    width: 100%;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  #usersTableBody .actions-cell {
+    justify-content: flex-end; /* Empuja los botones a la derecha */
+  }
+    
   }
   .page-header .btn {
     width: 100%; /* Botón +Nuevo ocupa toda la pantalla */
