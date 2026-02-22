@@ -729,6 +729,23 @@ function openUserModal(user = null) {
   document.getElementById('userForm').reset();
   document.getElementById('userId').value = '';
   
+  // Control de Opciones del Formulario según el Rol
+  const roleSelect = document.getElementById('userRoleField');
+  if (roleSelect) {
+    if (currentUser.role === 'admin') {
+      roleSelect.innerHTML = `
+        <option value="register">Register (Operador)</option>
+        <option value="admin">Admin</option>
+      `;
+    } else if (currentUser.role === 'superadmin') {
+      roleSelect.innerHTML = `
+        <option value="register">Register (Operador)</option>
+        <option value="admin">Admin</option>
+        <option value="superadmin">Super Admin</option>
+      `;
+    }
+  }
+  
   if (user) {
     document.getElementById('userId').value = user.id;
     document.getElementById('userUsername').value = user.username;

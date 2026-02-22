@@ -6,26 +6,43 @@ const { authenticateToken, requireSuperAdmin } = require('../middleware/auth');
 const router = express.Router();
 router.use(authenticateToken);
 
+// --- GET: Listar todos los usuarios ---
 router.get('/', async (req, res) => {
   try {
-    const users = await queryAll('SELECT id, username, email, role, active, created_at FROM users');
+    let query = 'SELECT id, username, email, role, active, created_at FROM users';
+    
+    // REGLA INVISIBLE: Si el que consulta es un admin, le ocultamos los superadmin de la lista
+    if (req.user.role === 'admin') {
+      query += " WHERE role != 'superadmin'";
+    }
+    
+    const users = await queryAll(query);
     res.json({ users });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error al obtener usuarios: ' + err.message });
   }
 });
 
-router.post('/', requireSuperAdmin, async (req, res) => {
+// --- POST: Crear un nuevo usuario ---
+router.post('/', async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
+    let { username, email, password, role } = req.body;
+    
+    // REGLA PARA ADMIN: Ahora puede crear 'register' y 'admin'
+    if (req.user.role === 'admin') {
+      if (role !== 'admin' && role !== 'register') {
+        role = 'register'; // Filtro de seguridad por si intentan enviar un rol no permitido
+      }
+    }
+
     const password_hash = bcrypt.hashSync(password, 10);
     const result = await queryRun(
       'INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)',
-      [username, email, password_hash, role || 'admin']
+      [username, email, password_hash, role || 'register']
     );
-    res.status(201).json({ message: 'Usuario creado', id: result.lastInsertRowid });
+    res.status(201).json({ message: 'Usuario creado con éxito', id: result.lastInsertRowid });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: 'Error al crear usuario: ' + err.message });
   }
 });
 
