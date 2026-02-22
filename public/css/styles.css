@@ -1346,3 +1346,54 @@ textarea.form-control {
     opacity: 0.4;
   }
 }
+
+/* ============================================
+   🚑 PARCHE RESPONSIVE PREMIUM (Tablets y Móviles)
+   ============================================ */
+
+/* 1. Ajuste para Tablets (iPad Portrait y similares) */
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .main-content {
+    margin-left: 0;
+  }
+  .mobile-toggle {
+    display: block;
+  }
+}
+
+/* 2. Ajustes táctiles estrictos para teléfonos */
+@media (max-width: 768px) {
+  /* Modales: Botones anchos y fáciles de tocar con el pulgar */
+  .modal-footer {
+    flex-direction: column-reverse; /* El botón principal queda arriba, cancelar abajo */
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 1.25rem 1rem;
+  }
+  
+  .modal-footer .btn {
+    width: 100%;
+    padding: 0.85rem; /* Zona táctil más grande */
+  }
+
+  /* Toasts: Centrados dinámicos para no desbordar pantallas de 320px */
+  .toast-container {
+    left: 1rem;
+    right: 1rem;
+    top: 1rem;
+    align-items: center;
+  }
+  
+  .toast {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+  }
+}
