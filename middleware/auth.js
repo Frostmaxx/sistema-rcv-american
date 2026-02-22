@@ -14,13 +14,13 @@ function authenticateToken(req, res, next) {
   });
 }
 
-// 2. Verificador de Privilegios Altos (Para crear/borrar usuarios)
-function requireSuperAdmin(req, res, next) {
-  if (req.user && req.user.role === 'superadmin') {
-    next(); // Tiene permisos, lo dejamos pasar a la ruta
+// 2. Verificador de Privilegios Administrativos (Superadmin y Admin)
+function canManageUsers(req, res, next) {
+  if (req.user && (req.user.role === 'superadmin' || req.user.role === 'admin')) {
+    next(); // Tiene permisos, lo dejamos pasar a la ruta de usuarios
   } else {
-    res.status(403).json({ error: 'Acceso denegado. Esta acción está reservada para el nivel Super Admin.' });
+    res.status(403).json({ error: 'Acceso denegado. No tienes permisos para gestionar usuarios.' });
   }
 }
 
-module.exports = { authenticateToken, requireSuperAdmin };
+module.exports = { authenticateToken, canManageUsers };

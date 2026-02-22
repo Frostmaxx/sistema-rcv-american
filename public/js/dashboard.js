@@ -55,7 +55,7 @@ async function apiFetch(url, options = {}) {
     
     if (res.status === 401 || res.status === 403) {
       logout();
-      return null;
+      throw new Error(data.error || 'Acceso denegado o sesión expirada');
     }
     
     if (!res.ok) {
