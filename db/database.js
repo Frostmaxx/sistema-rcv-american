@@ -26,11 +26,24 @@ async function initDatabase() {
       email VARCHAR(255) UNIQUE NOT NULL,
       password_hash VARCHAR(255) NOT NULL,
       role VARCHAR(50) DEFAULT 'admin',
+      password_hint VARCHAR(255) DEFAULT NULL,
       active TINYINT DEFAULT 1,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )
   `);
+
+  // === AUTO-PARCHE: Añadir columna si falta en una base de datos existente ===
+  try {
+    await pool.query("ALTER TABLE users ADD COLUMN password_hint VARCHAR(255) DEFAULT NULL");
+    console.log('✅ Base de datos parcheada: Columna password_hint añadida exitosamente.');
+  } catch (err) {
+    // Si el error es 1060 (Duplicate column name), significa que ya existe y lo ignoramos en silencio.
+    if (err.errno !== 1060) {
+      console.log('⚠️ Nota sobre password_hint:', err.message);
+    }
+  }
+  // =========================================================================
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS clients (
