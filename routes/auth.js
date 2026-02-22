@@ -10,8 +10,21 @@ router.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const user = await queryGet('SELECT * FROM users WHERE username = ? AND active = 1', [username]);
 
-    if (!user || !bcrypt.compareSync(password, user.password_hash)) {
-      return res.status(401).json({ error: 'Credenciales inválidas o usuario inactivo' });
+    // 1. Validamos si el usuario existe
+    if (!user) {
+      return res.status(401).json({ error: 'Usuario no encontrado o inactivo.' });
+    }
+
+    // 2. Validamos la contraseña
+    if (!bcrypt.compareSync(password, user.password_hash)) {
+      let mensajeError = 'Contraseña incorrecta.';
+      
+      // Lógica inteligente: Si es admin y tiene indicio configurado, lo mostramos
+      if (user.role === 'admin' && user.password_hint) {
+        mensajeError = `Contraseña incorrecta. 💡 Indicio: ${user.password_hint}`;
+      }
+      
+      return res.status(401).json({ error: mensajeError });
     }
 
     const token = jwt.sign(
