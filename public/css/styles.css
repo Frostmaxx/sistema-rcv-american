@@ -930,7 +930,9 @@ textarea.form-control {
   width: 100%;
   max-width: 560px;
   max-height: 90vh;
-  overflow-y: auto;
+  display: flex;             /* NUEVO: Lo convierte en columna flexible */
+  flex-direction: column;    /* NUEVO */
+  overflow: hidden;          /* NUEVO: Evita que el modal entero haga scroll */
   transform: translateY(20px) scale(0.97);
   transition: transform var(--transition);
   box-shadow: var(--shadow-lg);
@@ -946,6 +948,7 @@ textarea.form-control {
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;            /* NUEVO: La cabecera nunca se encoge */
 }
 
 .modal-header h3 {
@@ -971,6 +974,8 @@ textarea.form-control {
 
 .modal-body {
   padding: 1.5rem;
+  overflow-y: auto;          /* NUEVO: Solo el cuerpo hace scroll */
+  flex: 1;                   /* NUEVO: Ocupa todo el espacio intermedio disponible */
 }
 
 .modal-footer {
@@ -980,6 +985,7 @@ textarea.form-control {
   gap: 0.75rem;
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--border-color);
+  flex-shrink: 0;            /* NUEVO: Los botones nunca se encogen */
 }
 
 /* ── Sections ── */
@@ -1064,6 +1070,12 @@ textarea.form-control {
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  flex-wrap: nowrap; /* NUEVO: Prohíbe que los botones bajen a otra línea */
+}
+
+/* NUEVO CODIGO: Agrega esto justo debajo */
+.actions-cell .btn-icon {
+  flex-shrink: 0;    /* NUEVO: Prohíbe que los botones reduzcan su tamaño de 36px */
 }
 
 /* ── Toast Notifications ── */
@@ -1275,125 +1287,58 @@ textarea.form-control {
   }
 }
 
-/* ── Responsive ── */
+/* ── Responsive Definitivo ── */
+@media (max-width: 1024px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main-content { margin-left: 0; }
+  .mobile-toggle { display: block; }
+}
+
 @media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .main-content {
-    margin-left: 0;
-  }
-
-  .mobile-toggle {
-    display: block;
-  }
-
   .page-header {
     padding: 1.5rem 1rem 1rem;
     padding-left: 3.5rem;
     flex-direction: column;
     align-items: stretch;
     text-align: center;
+    gap: 1rem;
+  }
+  .page-header .btn {
+    width: 100%; /* Botón +Nuevo ocupa toda la pantalla */
+    justify-content: center;
+  }
+  .page-body { padding: 1rem; }
+  .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  .content-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; gap: 1rem; }
+  .table-header { flex-direction: column; align-items: stretch; }
+  .search-box input { width: 100%; }
+  .search-box input:focus { width: 100%; }
+  
+  /* Protege que las tablas y botones no hagan extraños en móvil */
+  .data-table { 
+    display: block; 
+    overflow-x: auto; 
+    white-space: nowrap; 
   }
 
-  .page-body {
-    padding: 1rem;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  }
-
-  .content-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  .table-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .search-box input {
-    width: 100%;
-  }
-
-  .search-box input:focus {
-    width: 100%;
-  }
-
-  .data-table {
-    display: block;
-    overflow-x: auto;
-  }
-}
-
-/* ── Expiration Alert Animation ── */
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-}
-
-/* ============================================
-   🚑 PARCHE RESPONSIVE PREMIUM (Tablets y Móviles)
-   ============================================ */
-
-/* 1. Ajuste para Tablets (iPad Portrait y similares) */
-@media (max-width: 1024px) {
-  .sidebar {
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-  .main-content {
-    margin-left: 0;
-  }
-  .mobile-toggle {
-    display: block;
-  }
-}
-
-/* 2. Ajustes táctiles estrictos para teléfonos */
-@media (max-width: 768px) {
-  /* Modales: Botones anchos y fáciles de tocar con el pulgar */
+  /* Modales: Botones fijos y anchos, el de cancelar queda abajo */
   .modal-footer {
-    flex-direction: column-reverse; /* El botón principal queda arriba, cancelar abajo */
+    flex-direction: column-reverse;
     align-items: stretch;
     gap: 0.5rem;
     padding: 1.25rem 1rem;
   }
-  
-  .modal-footer .btn {
-    width: 100%;
-    padding: 0.85rem; /* Zona táctil más grande */
-  }
+  .modal-footer .btn { width: 100%; padding: 0.85rem; }
 
-  /* Toasts: Centrados dinámicos para no desbordar pantallas de 320px */
-  .toast-container {
-    left: 1rem;
-    right: 1rem;
-    top: 1rem;
-    align-items: center;
-  }
-  
-  .toast {
-    min-width: 0;
-    width: 100%;
-    max-width: 100%;
-    justify-content: center;
-  }
+  /* Toasts centrados dinámicamente */
+  .toast-container { left: 1rem; right: 1rem; top: 1rem; align-items: center; }
+  .toast { min-width: 0; width: 100%; max-width: 100%; justify-content: center; }
+}
+
+/* ── Animaciones Adicionales ── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
