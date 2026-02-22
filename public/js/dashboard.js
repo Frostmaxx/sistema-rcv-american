@@ -724,16 +724,16 @@ async function loadUsers() {
   }
 }
 
-// NUEVA FUNCIÓN: Prepara el modal para crear o editar (Blindada)
 function openUserModal(user = null) {
   document.getElementById('userForm').reset();
   document.getElementById('userId').value = '';
-
-  // 1. Normalizamos el rol a minúsculas para evitar errores tipográficos en la sesión
-  const safeRole = String(currentUser.role).toLowerCase().trim();
   
-  // 2. Control estricto de opciones del Formulario
+  const hintField = document.getElementById('userPasswordHint');
+  if (hintField) hintField.value = '';
+
+  const safeRole = String(currentUser.role).toLowerCase().trim();
   const roleSelect = document.getElementById('userRoleField');
+  
   if (roleSelect) {
     if (safeRole === 'admin') {
       roleSelect.innerHTML = `
@@ -741,7 +741,6 @@ function openUserModal(user = null) {
         <option value="admin">Admin</option>
       `;
     } else {
-      // Si es superadmin, ve todo
       roleSelect.innerHTML = `
         <option value="register">Register (Operador)</option>
         <option value="admin">Admin</option>
@@ -750,17 +749,19 @@ function openUserModal(user = null) {
     }
   }
 
-  // 3. Llenado de datos si es edición
   if (user) {
     document.getElementById('userId').value = user.id;
     document.getElementById('userUsername').value = user.username;
     document.getElementById('userEmailField').value = user.email;
     
-    // Validación de seguridad visual para evitar opciones fantasma
-    if ([...roleSelect.options].some(opt => opt.value === user.role)) {
-      roleSelect.value = user.role;
-    } else {
-      roleSelect.value = 'register';
+    if (hintField && user.password_hint) hintField.value = user.password_hint;
+    
+    if (roleSelect) {
+      if ([...roleSelect.options].some(opt => opt.value === user.role)) {
+        roleSelect.value = user.role;
+      } else {
+        roleSelect.value = 'register';
+      }
     }
     
     document.getElementById('userModalTitle').textContent = 'Editar Usuario';
@@ -776,8 +777,6 @@ async function editUser(id) {
     const data = await apiFetch('/api/users');
     const user = data.users.find(u => u.id === id);
     if (!user) return;
-    
-    // Llamamos a la función centralizada
     openUserModal(user);
   } catch (err) {
     console.error('Error fetching user:', err);
@@ -787,16 +786,18 @@ async function editUser(id) {
 async function saveUser(e) {
   e.preventDefault();
   const id = document.getElementById('userId').value;
+  const hintField = document.getElementById('userPasswordHint');
+  
   const body = {
     username: document.getElementById('userUsername').value,
     email: document.getElementById('userEmailField').value,
-    role: document.getElementById('userRoleField').value
+    role: document.getElementById('userRoleField').value,
+    password_hint: hintField ? hintField.value : ''
   };
   
   const password = document.getElementById('userPassword').value;
   if (password) body.password = password;
 
-  // Validación: Si no hay ID (es creación) y no hay password, bloqueamos
   if (!id && !password) {
     showToast('La contraseña es obligatoria para un usuario nuevo.', 'warning');
     return;
@@ -804,11 +805,9 @@ async function saveUser(e) {
   
   try {
     if (id) {
-      // Flujo de EDICIÓN (PUT)
       await apiFetch(`/api/users/${id}`, { method: 'PUT', body: JSON.stringify(body) });
       showToast('Usuario actualizado exitosamente', 'success');
       
-      // Si se edita a sí mismo, actualizar el UI
       if (Number(id) === currentUser.id) {
         currentUser.username = body.username;
         currentUser.email = body.email;
@@ -819,7 +818,6 @@ async function saveUser(e) {
         document.getElementById('userAvatar').textContent = currentUser.username.charAt(0).toUpperCase();
       }
     } else {
-      // Flujo de CREACIÓN (POST)
       await apiFetch('/api/users', { method: 'POST', body: JSON.stringify(body) });
       showToast('Usuario creado exitosamente', 'success');
     }
