@@ -724,20 +724,24 @@ async function loadUsers() {
   }
 }
 
-// NUEVA FUNCIÓN: Prepara el modal para crear o editar
+// NUEVA FUNCIÓN: Prepara el modal para crear o editar (Blindada)
 function openUserModal(user = null) {
   document.getElementById('userForm').reset();
   document.getElementById('userId').value = '';
+
+  // 1. Normalizamos el rol a minúsculas para evitar errores tipográficos en la sesión
+  const safeRole = String(currentUser.role).toLowerCase().trim();
   
-  // Control de Opciones del Formulario según el Rol
+  // 2. Control estricto de opciones del Formulario
   const roleSelect = document.getElementById('userRoleField');
   if (roleSelect) {
-    if (currentUser.role === 'admin') {
+    if (safeRole === 'admin') {
       roleSelect.innerHTML = `
         <option value="register">Register (Operador)</option>
         <option value="admin">Admin</option>
       `;
-    } else if (currentUser.role === 'superadmin') {
+    } else {
+      // Si es superadmin, ve todo
       roleSelect.innerHTML = `
         <option value="register">Register (Operador)</option>
         <option value="admin">Admin</option>
@@ -745,17 +749,25 @@ function openUserModal(user = null) {
       `;
     }
   }
-  
+
+  // 3. Llenado de datos si es edición
   if (user) {
     document.getElementById('userId').value = user.id;
     document.getElementById('userUsername').value = user.username;
     document.getElementById('userEmailField').value = user.email;
-    document.getElementById('userRoleField').value = user.role;
+    
+    // Validación de seguridad visual para evitar opciones fantasma
+    if ([...roleSelect.options].some(opt => opt.value === user.role)) {
+      roleSelect.value = user.role;
+    } else {
+      roleSelect.value = 'register';
+    }
+    
     document.getElementById('userModalTitle').textContent = 'Editar Usuario';
   } else {
     document.getElementById('userModalTitle').textContent = 'Nuevo Usuario';
   }
-  
+
   openModal('userModal');
 }
 
