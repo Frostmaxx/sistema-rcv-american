@@ -12,7 +12,8 @@ Sistema web para la gestión de seguros de Responsabilidad Civil Vehicular.
 
 ## Requisitos
 
-- Node.js (v14 o superior)
+- Node.js (v18 o superior)
+- MySQL 8+ o MariaDB 11+
 - Navegador web moderno
 
 ## Instalación
@@ -26,8 +27,11 @@ Sistema web para la gestión de seguros de Responsabilidad Civil Vehicular.
 
 ## Configuración
 
-1. El sistema utiliza una base de datos SQLite local (`db/rcv.db`), que se inicializa automáticamente si no existe.
-2. (Opcional) Configurar las variables de entorno en un archivo `.env` si se requiere personalizar el puerto o secretos (por defecto usa puerto 3000).
+1. Copiar `.env.example` a `.env` y configurar las credenciales de MySQL/MariaDB, el secreto `JWT_SECRET` y el puerto (por defecto `4000`):
+   ```bash
+   cp .env.example .env
+   ```
+2. Crear la base de datos configurada en `DB_NAME` (por defecto `rcv_db`); al iniciar el servidor se crean automáticamente las tablas necesarias y el usuario administrador inicial si la tabla `users` está vacía.
 
 ## Ejecución
 
@@ -37,17 +41,27 @@ Para iniciar el servidor:
 npm start
 ```
 
-O para desarrollo (si tienes nodemon o similar):
+Comandos útiles adicionales:
 
 ```bash
-npm run dev
+npm test                 # Ejecutar pruebas unitarias y de integración
+npm run backup           # Generar respaldo SQL en backups/ (retención de 14 días)
+npm run restore-superadmin  # Reparar tabla users y restaurar el superadmin de emergencia
 ```
 
-El sistema estará disponible en: [http://localhost:3000](http://localhost:3000)
+El sistema estará disponible en: [http://localhost:4000](http://localhost:4000)
+Endpoint de monitoreo: `GET /api/health`
+
+## Superadmin de Emergencia
+
+Las variables `EMERGENCY_SUPERADMIN_USER` y `EMERGENCY_SUPERADMIN_PASSWORD` (o `EMERGENCY_SUPERADMIN_PASSWORD_HASH`) en `.env` garantizan una cuenta `superadmin` protegida contra eliminación/degradación y capaz de restaurar la tabla `users` automáticamente en caso de pérdida o corrupción.
 
 ## Estructura del Proyecto
 
 - `public/`: Frontend (HTML, CSS, JS, imágenes).
-- `routes/`: API Backend (Express).
-- `db/`: Capa de base de datos (SQLite).
-- `middleware/`: Lógica intermedia (Autenticación).
+- `routes/`: API Backend (Express, incluyendo `/api/audit`).
+- `db/`: Capa de base de datos (MySQL / MariaDB, índices y bitácora).
+- `middleware/`: Autenticación, roles y cabeceras de seguridad / CORS.
+- `utils/`: Utilidades compartidas (coberturas, firmas QR HMAC, rate limiter, auditoría y recuperación).
+- `scripts/`: Herramientas CLI de respaldo y recuperación.
+- `tests/`: Suite de pruebas con `node --test`.

@@ -7,16 +7,18 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test tests/*.test.js",
+    "backup": "node scripts/backup-db.js",
+    "restore-superadmin": "node scripts/restore-superadmin.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "compression": "^1.8.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.17.4",
-    "qrcode": "^1.5.4",
-    "sql.js": "^1.11.0"
+    "mysql2": "^3.17.4"
   }
 }

@@ -9,10 +9,11 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
 </head>
 <body>
-  <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+  <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Menú">☰</button>
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
 
   <div class="app-layout">
-    <!-- Sidebar -->
+
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <div class="brand">
@@ -51,6 +52,9 @@
           <button class="nav-item" data-section="users" onclick="navigateTo('users')">
             <span class="nav-icon">⚙️</span> Usuarios
           </button>
+          <button class="nav-item" data-section="audit" onclick="navigateTo('audit')" style="display:none;">
+            <span class="nav-icon">🛡️</span> Auditoría
+          </button>
         </div>
       </nav>
 
@@ -66,9 +70,8 @@
       </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
-      <!-- ═══════════════════ DASHBOARD SECTION ═══════════════════ -->
+
       <section class="content-section active" id="section-dashboard">
         <div class="page-header">
           <div>
@@ -95,7 +98,7 @@
             </div>
             <div class="stat-card info">
               <div class="stat-icon">💰</div>
-              <div class="stat-value" id="statTotalPrimas">$0</div>
+              <div class="stat-value" id="statTotalPrimas">€ 0</div>
               <div class="stat-label">Primas Activas</div>
             </div>
             <div class="stat-card danger">
@@ -105,13 +108,13 @@
             </div>
             <div class="stat-card accent">
               <div class="stat-icon">🔒</div>
-              <div class="stat-value" id="statTotalMontos">$0</div>
+              <div class="stat-value" id="statTotalMontos">€ 0</div>
               <div class="stat-label">Cobertura Total</div>
             </div>
           </div>
 
           <div class="content-grid">
-            <!-- Recent Clients -->
+
             <div class="section-card">
               <div class="section-card-header">
                 <h3>🆕 Clientes Recientes</h3>
@@ -122,7 +125,6 @@
               </div>
             </div>
 
-            <!-- Recent Policies -->
             <div class="section-card">
               <div class="section-card-header">
                 <h3>📋 Pólizas Recientes</h3>
@@ -136,7 +138,6 @@
         </div>
       </section>
 
-      <!-- ═══════════════════ CLIENTS SECTION ═══════════════════ -->
       <section class="content-section" id="section-clients">
         <div class="page-header">
           <div>
@@ -151,25 +152,27 @@
               <h3>Lista de Clientes</h3>
               <div class="table-actions">
                 <div class="search-box">
-                  <input type="text" placeholder="Buscar por cédula, nombre..." id="clientSearch" oninput="debounceSearch(loadClients, 'clientSearch')">
+                  <input type="text" placeholder="Buscar por documento ID, nombre..." id="clientSearch" oninput="debounceSearch(loadClients, 'clientSearch')">
                 </div>
               </div>
             </div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Cédula</th>
-                  <th>Nombre</th>
-                  <th>Teléfono</th>
-                  <th>Email</th>
-                  <th>Ciudad</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="clientsTableBody">
-                <tr><td colspan="6"><div class="table-empty"><div class="empty-icon">👥</div><p>No hay clientes</p></div></td></tr>
-              </tbody>
-            </table>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Documento ID</th>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Ciudad</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="clientsTableBody">
+                  <tr><td colspan="6"><div class="table-empty"><div class="empty-icon">👥</div><p>No hay clientes</p></div></td></tr>
+                </tbody>
+              </table>
+            </div>
             <div class="table-footer">
               <span id="clientsCount">0 clientes</span>
               <div class="pagination" id="clientsPagination"></div>
@@ -178,7 +181,6 @@
         </div>
       </section>
 
-      <!-- ═══════════════════ POLICIES SECTION ═══════════════════ -->
       <section class="content-section" id="section-policies">
         <div class="page-header">
           <div>
@@ -196,6 +198,7 @@
                   <select id="policyStatusFilter" onchange="loadPolicies()">
                     <option value="">Todos los estados</option>
                     <option value="activa">Activas</option>
+                    <option value="expiring">Por vencer (15 días)</option>
                     <option value="pendiente">Pendientes</option>
                     <option value="vencida">Vencidas</option>
                     <option value="cancelada">Canceladas</option>
@@ -204,25 +207,28 @@
                 <div class="search-box">
                   <input type="text" placeholder="Buscar póliza, placa..." id="policySearch" oninput="debounceSearch(loadPolicies, 'policySearch')">
                 </div>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="exportPoliciesCsv()" title="Exportar CSV">📥 Exportar</button>
               </div>
             </div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Nº Póliza</th>
-                  <th>Cliente</th>
-                  <th>Vehículo</th>
-                  <th>Placa</th>
-                  <th>Cobertura</th>
-                  <th>Prima</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="policiesTableBody">
-                <tr><td colspan="8"><div class="table-empty"><div class="empty-icon">📋</div><p>No hay pólizas</p></div></td></tr>
-              </tbody>
-            </table>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Nº Póliza</th>
+                    <th>Cliente</th>
+                    <th>Vehículo</th>
+                    <th>Placa</th>
+                    <th>Cobertura</th>
+                    <th>Prima</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="policiesTableBody">
+                  <tr><td colspan="8"><div class="table-empty"><div class="empty-icon">📋</div><p>No hay pólizas</p></div></td></tr>
+                </tbody>
+              </table>
+            </div>
             <div class="table-footer">
               <span id="policiesCount">0 pólizas</span>
               <div class="pagination" id="policiesPagination"></div>
@@ -231,41 +237,41 @@
         </div>
       </section>
 
-      <!-- ═══════════════════ COVERAGES SECTION ═══════════════════ -->
       <section class="content-section" id="section-coverages">
         <div class="page-header">
           <div>
             <h1>Coberturas</h1>
             <p>Gestión de tipos de cobertura y precios</p>
           </div>
-          <button class="btn btn-primary" onclick="openCoverageModal()">+ Nueva Cobertura</button>
+          <button class="btn btn-primary" id="btnNewCoverage" onclick="openCoverageModal()">+ Nueva Cobertura</button>
         </div>
         <div class="page-body">
           <div class="table-container">
             <div class="table-header">
               <h3>Coberturas Disponibles</h3>
             </div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Descripción</th>
-                  <th>Prima Anual</th>
-                  <th>Monto Total</th>
-                  <th>Coberturas</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="coveragesTableBody">
-                <tr><td colspan="7"><div class="table-empty"><div class="empty-icon">🛡️</div><p>No hay coberturas configuradas</p></div></td></tr>
-              </tbody>
-            </table>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Prima Anual</th>
+                    <th>Monto Total</th>
+                    <th>Coberturas</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="coveragesTableBody">
+                  <tr><td colspan="7"><div class="table-empty"><div class="empty-icon">🛡️</div><p>No hay coberturas configuradas</p></div></td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- ═══════════════════ USERS SECTION ═══════════════════ -->
       <section class="content-section" id="section-users">
         <div class="page-header">
           <div>
@@ -279,30 +285,80 @@
             <div class="table-header">
               <h3>Usuarios del Sistema</h3>
             </div>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Usuario</th>
-                  <th>Email</th>
-                  <th>Rol</th>
-                  <th>Estado</th>
-                  <th>Registrado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="usersTableBody">
-                <tr><td colspan="6"><div class="table-empty"><div class="empty-icon">⚙️</div><p>No hay usuarios</p></div></td></tr>
-              </tbody>
-            </table>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Registrado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <tr><td colspan="6"><div class="table-empty"><div class="empty-icon">⚙️</div><p>No hay usuarios</p></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section" id="section-audit">
+        <div class="page-header">
+          <div>
+            <h1>Bitácora de Auditoría</h1>
+            <p>Registro de accesos y operaciones críticas del sistema</p>
+          </div>
+          <button class="btn btn-secondary" onclick="loadAuditLogs(1)">🔄 Actualizar</button>
+        </div>
+        <div class="page-body">
+          <div class="table-container">
+            <div class="table-header">
+              <h3>Eventos Recientes</h3>
+              <div class="table-actions">
+                <div class="filter-bar">
+                  <select id="auditEntityFilter" onchange="loadAuditLogs(1)">
+                    <option value="">Todas las entidades</option>
+                    <option value="auth">Autenticación</option>
+                    <option value="policy">Pólizas</option>
+                    <option value="client">Clientes</option>
+                    <option value="coverage">Coberturas</option>
+                    <option value="user">Usuarios</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Acción</th>
+                    <th>Entidad</th>
+                    <th>ID</th>
+                    <th>Detalles</th>
+                    <th>IP</th>
+                  </tr>
+                </thead>
+                <tbody id="auditTableBody">
+                  <tr><td colspan="7"><div class="table-empty"><div class="empty-icon">🛡️</div><p>Sin eventos registrados</p></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span id="auditCount">0 eventos</span>
+              <div class="pagination" id="auditPagination"></div>
+            </div>
           </div>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- ═══════════════════ MODALS ═══════════════════ -->
-
-  <!-- Client Modal -->
   <div class="modal-overlay" id="clientModal">
     <div class="modal">
       <div class="modal-header">
@@ -314,8 +370,15 @@
           <input type="hidden" id="clientId">
           <div class="form-row">
             <div class="form-group">
-              <label for="clientCedula">Cédula *</label>
-              <input type="text" id="clientCedula" class="form-control" placeholder="V-12345678" required>
+              <label for="clientCedula">Documento ID *</label>
+              <div class="doc-id-group">
+                <select id="clientDocType" class="form-control doc-id-prefix" aria-label="Tipo de Documento ID" onchange="updateDocIdPlaceholder()">
+                  <option value="V-" title="Cédula de Identidad de Venezolano">V-</option>
+                  <option value="E-" title="Cédula de Extranjero">E-</option>
+                  <option value="J-" title="Persona Jurídica">J-</option>
+                </select>
+                <input type="text" id="clientCedula" class="form-control doc-id-number" inputmode="numeric" pattern="[0-9]+" placeholder="000000000" oninput="handleDocIdInput(this)" required>
+              </div>
             </div>
             <div class="form-group">
               <label for="clientFechaNac">Fecha de Nacimiento</label>
@@ -365,7 +428,6 @@
     </div>
   </div>
 
-  <!-- Policy Modal -->
   <div class="modal-overlay" id="policyModal">
     <div class="modal">
       <div class="modal-header">
@@ -377,6 +439,7 @@
           <input type="hidden" id="policyId">
           <div class="form-group">
             <label for="policyClient">Cliente *</label>
+            <input type="text" id="policyClientSearch" class="form-control" placeholder="Filtrar cliente por Documento ID o nombre..." oninput="filterPolicyClientOptions(this.value)" style="margin-bottom:0.45rem;">
             <select id="policyClient" class="form-control" required>
               <option value="">Seleccione un cliente</option>
             </select>
@@ -430,7 +493,7 @@
             <label for="policyCobertura">Cobertura *</label>
             <select id="policyCobertura" class="form-control" required>
               <option value="">Seleccione cobertura</option>
-              <!-- Dynamic coverages loaded from API -->
+
             </select>
           </div>
           <div class="form-row">
@@ -456,7 +519,6 @@
     </div>
   </div>
 
-  <!-- User Edit Modal -->
   <div class="modal-overlay" id="userModal">
     <div class="modal">
       <div class="modal-header">
@@ -499,7 +561,6 @@
     </div>
   </div>
 
-  <!-- Confirm Dialog -->
   <div class="confirm-overlay" id="confirmDialog">
     <div class="confirm-dialog">
       <div class="confirm-icon">⚠️</div>
@@ -512,7 +573,6 @@
     </div>
   </div>
 
-  <!-- Coverage Modal -->
   <div class="modal-overlay" id="coverageModal">
     <div class="modal" style="max-width:700px">
       <div class="modal-header">
@@ -547,7 +607,6 @@
     </div>
   </div>
 
-  <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
 
   <script src="/js/legal-config.js"></script>

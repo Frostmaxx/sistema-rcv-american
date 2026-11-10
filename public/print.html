@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -26,10 +26,9 @@
       background: #f1f5f9;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
-      font-size: 0.8rem; /* reducir texto general */
+      font-size: 0.8rem;
     }
 
-    /* ── Screen Controls ── */
     .screen-controls {
       position: fixed;
       top: 1.5rem;
@@ -102,9 +101,90 @@
     .loading-screen.hidden { opacity: 0; pointer-events: none; }
     .loading-text { font-size: 1rem; color: var(--gray); }
 
-    /* ══════════════════════════════════════
-       LETTER SIZE (CARTA) — 8.5" x 11"
-       ══════════════════════════════════════ */
+    .error-screen {
+      position: fixed;
+      inset: 0;
+      background: #f1f5f9;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      z-index: 250;
+    }
+    .error-screen.active { display: flex; }
+    .error-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+    .error-card h2 { font-size: 1.1rem; color: #0f172a; margin-bottom: 0.5rem; }
+    .error-card p { font-size: 0.85rem; color: var(--gray); line-height: 1.5; margin-bottom: 1.25rem; }
+    .error-actions { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+    .error-actions button {
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: #334155;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .error-actions button.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .status-pill {
+      display: inline-block;
+      margin-left: 0.5rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      vertical-align: middle;
+    }
+    .status-pill.activa { background: #dcfce7; color: #15803d; }
+    .status-pill.pendiente { background: #fef3c7; color: #b45309; }
+    .status-pill.vencida, .status-pill.cancelada { background: #fee2e2; color: #b91c1c; }
+
+    .screen-controls button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .status-watermark {
+      display: none;
+      position: absolute;
+      top: 42%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-28deg);
+      font-size: 4.5rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      color: rgba(220, 38, 38, 0.14);
+      border: 6px solid rgba(220, 38, 38, 0.16);
+      padding: 0.35rem 1.5rem;
+      border-radius: 12px;
+      pointer-events: none;
+      user-select: none;
+      z-index: 20;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .print-carta.is-inactive-policy .status-watermark {
+      display: block;
+    }
+
     .print-carta {
       width: 8.5in;
       min-height: 11in;
@@ -116,7 +196,6 @@
       position: relative;
     }
 
-    /* Header redesigned to match recibo layout */
     .carta-header {
       display: flex;
       align-items: flex-start;
@@ -214,7 +293,7 @@
     .client-grid, .vehicle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem 1rem; }
     .client-row { display:flex; justify-content:space-between; gap:0.4rem; }
     .client-label { font-size:0.7rem; color:var(--gray); font-weight:700; text-transform:uppercase; }
-    .client-value { font-size:0.7rem; font-weight:600; }
+    .client-value { font-size:0.7rem; font-weight:600; overflow-wrap:anywhere; word-break:break-word; }
 
     .coverage-table { width:100%; border-collapse: collapse; margin-top:0.4rem; }
     .coverage-table td, .coverage-table th { padding: 0.2rem 0.4rem; font-size:0.6rem; }
@@ -224,7 +303,6 @@
     .footer-stamps { display:flex; gap:1rem; align-items:flex-end; justify-content:space-between; padding:1rem 1.2rem; }
     .stamp { opacity:0.9; filter: grayscale(100%); }
 
-    /* Stamps and signature images (stacked on the right above the signature line) */
     .footer-stamps .sig-right { display:flex; flex-direction:column; align-items:flex-end; }
     .footer-stamps .stamp-group { display:flex; flex-direction:row; gap:0.5rem; align-items:center; justify-content:flex-end; margin-bottom:0.15rem; }
     .footer-stamps .sig-left { display:flex; flex-direction:column; align-items:flex-start; }
@@ -376,11 +454,8 @@
       font-size: 0.7rem;
       color: var(--dark);
       line-height: 1.5;
-    }  
+    }
 
-       /* ══════════════════════════════════════
-       CARNET FORMAT — License-style ID Card
-       ══════════════════════════════════════ */
     .print-carnet-wrapper {
       display: flex;
       flex-direction: column;
@@ -399,7 +474,6 @@
       background: white;
     }
 
-    /* ── FRONT ── */
     .carnet-front {
       height: 100%;
       display: flex;
@@ -478,6 +552,8 @@
       font-weight: 600;
       color: #1e293b;
       line-height: 1.15;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     .carnet-data-row .d-value.big {
@@ -536,7 +612,6 @@
       letter-spacing: 0.02em;
     }
 
-    /* ── BACK ── */
     .carnet-back {
       background: white;
       color: #1e293b;
@@ -554,7 +629,7 @@
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      line-height: 0,6rem;
+      line-height: 0.6rem;
     }
 
     .carnet-header-subtitle {
@@ -588,6 +663,7 @@
       display: grid;
       grid-template-columns: 1fr 2fr;
       gap: 0.22rem 0.5rem;
+      max-width: calc(100% - 0.92in);
     }
 
     .carnet-back-field .cb-label {
@@ -603,6 +679,8 @@
       font-weight: 600;
       color: #334155;
       margin-top: 0.02rem;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
     .carnet-back-footer {
@@ -622,7 +700,6 @@
       margin-bottom: 0.25rem;
     }
 
-    /* ── QR Code Containers ── */
     .carta-qr {
       float: right;
       text-align: center;
@@ -675,21 +752,16 @@
       letter-spacing: 0.04em;
     }
 
-    /* Carnet page layout: show front and back side-by-side without gap */
     .carnet-page { page-break-before: always; display: flex; justify-content: center; margin-top: 2.0rem; gap: 0; padding: 0.2in 0; }
     .carnet-page .carnet-card { margin: 0; border-radius: 6px; }
 
-    /* ── Shared hidden class ── */
     .hidden { display: none !important; }
 
-    /* ══════════════════════════════════════
-       PRINT MEDIA QUERIES
-       ══════════════════════════════════════ */
     @media print {
       body { background: white !important; }
-      .screen-controls, .format-label, .loading-screen { display: none !important; }
+      .screen-controls, .format-label, .loading-screen, .error-screen { display: none !important; }
+      body.print-blocked .print-carta { display: none !important; }
 
-      /* CARTA PRINT */
       .print-carta {
         margin: 0 !important;
         box-shadow: none !important;
@@ -698,7 +770,6 @@
         min-height: auto !important;
       }
 
-      /* CARNET PRINT */
       .print-carnet-wrapper {
         margin: 0 !important;
         gap: 0.5in !important;
@@ -708,46 +779,134 @@
     }
 
     @page {
+      size: letter portrait;
       margin: 0.4in;
     }
 
-    /* Carta specific page */
-    body.mode-carta {
-      @page { size: letter portrait; }
+    @media screen and (max-width: 860px) {
+      .print-carta {
+        width: calc(100% - 1.5rem);
+        max-width: 8.5in;
+        min-height: auto;
+        margin: 4.5rem auto 1.5rem;
+      }
+
+      .carnet-page {
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 0.5rem 1rem 1.25rem;
+      }
     }
 
-    /* Carnet specific page */
-    body.mode-carnet {
-      @page { size: letter portrait; }
+    @media screen and (max-width: 600px) {
+      .format-label {
+        position: static;
+        display: inline-block;
+        margin: 0.75rem 0.75rem 0;
+      }
+
+      .screen-controls {
+        position: static;
+        padding: 0.5rem 0.75rem 0;
+        flex-wrap: wrap;
+      }
+
+      .print-carta {
+        width: calc(100% - 1rem);
+        margin: 0.75rem auto 1.25rem;
+      }
+
+      .carta-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.5rem;
+      }
+
+      .carta-header .left,
+      .carta-header .center,
+      .carta-header .right {
+        width: 100%;
+        align-items: center;
+        text-align: center;
+      }
+
+      .carta-header .right .header-company,
+      .carta-header .right .rif {
+        text-align: center;
+        white-space: normal;
+      }
+
+      .contract-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .client-grid,
+      .vehicle-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-stamps {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .footer-stamps .sig-left,
+      .footer-stamps .sig-right {
+        align-items: center;
+      }
+
+      .footer-stamps .stamp-group {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .carnet-page .carnet-card {
+        width: 100% !important;
+        max-width: 3.375in;
+        height: auto;
+        min-height: 2.125in;
+      }
     }
   </style>
 </head>
-<body>
+<body class="print-blocked">
   <div class="loading-screen" id="loadingScreen">
     <div class="loading-text">⏳ Cargando comprobante...</div>
   </div>
 
+  <div class="error-screen" id="errorScreen" role="alert">
+    <div class="error-card">
+      <div style="font-size:2rem;margin-bottom:0.5rem;">⚠️</div>
+      <h2 id="errorTitle">No se pudo cargar el comprobante</h2>
+      <p id="errorMessage">Verifique el enlace o intente nuevamente.</p>
+      <div class="error-actions" id="errorActions"></div>
+    </div>
+  </div>
+
   <div class="format-label" id="formatLabel">
     Formato: <span id="formatName">Carta</span>
+    <span class="status-pill" id="policyStatusBadge" style="display:none;"></span>
   </div>
 
   <div class="screen-controls" id="screenControls">
-    <button class="btn-print-carta" onclick="switchAndPrint('carta')" id="btnCarta">
+    <button class="btn-print-carta" onclick="switchAndPrint('carta')" id="btnCarta" disabled>
       📄 Imprimir Carta
     </button>
-    <button class="btn-back" onclick="window.close()">
+    <button class="btn-back" onclick="handleBack()">
       ← Volver
     </button>
   </div>
 
-  <!-- ═══ CARTA (Letter) FORMAT ═══ -->
   <div class="print-carta" id="printCarta">
+    <div class="status-watermark" id="statusWatermark">VENCIDA</div>
     <div class="carta-header">
       <div class="left">
         <div class="carta-brand-icon" id="cartaLogoIcon">🛡️</div>
       </div>
       <div class="center">
-        <!-- título principal moved below header to match recibo layout -->
+
       </div>
       <div class="right">
         <div class="header-company" id="headerCompany">—</div>
@@ -755,7 +914,6 @@
       </div>
     </div>
 
-    <!-- Bloque con nombre de la empresa y registro legal (debajo del header) -->
     <div class="company-legal" id="companyLegalBlock">
       <div class="carta-company-name">Seguro de Responsabilidad Civil de Vehículos</div>
       <div class="carta-legal" id="cartaLegal"></div>
@@ -850,10 +1008,10 @@
           <tr><th>Beneficio</th><th class="coverage-amount">Cobertura</th></tr>
         </thead>
         <tbody id="cartaCoverageBody">
-          <!-- Filas pobladas dinámicamente desde policy.garantias o valores por defecto -->
+
         </tbody>
       </table>
-      <div style="margin-top:0.6rem; text-align:right; font-weight:800;">PAGO TOTAL EUR <span id="cartaMonto">230.00</span></div>
+      <div style="margin-top:0.6rem; text-align:right; font-weight:800;">PAGO TOTAL EUR <span id="cartaMonto">—</span></div>
     </div>
 
     <div class="footer-stamps">
@@ -871,14 +1029,12 @@
       </div>
     </div>
 
-    <!-- Carnet page: front and back on their own sheet, side-by-side with no gap -->
-     
     <div class="carnet-page" id="carnetPage">
       <div class="carnet-card" style="width:3.375in;">
         <div class="carnet-front">
           <div class="carnet-header-band">
             <div class="carnet-brand-icon" id="carnetLogoIcon"></div>
-            <div class="carnet-legal" id="carnetlegal"><p>SUNACOOP Nro 381558, SUDEASEGU Nro ES - 66</p></div>
+            <div class="carnet-legal" id="carnetLegal"><p>SUNACOOP Nro 381558, SUDEASEGU Nro ES - 66</p></div>
           </div>
 
           <div class="carnet-body">
@@ -945,25 +1101,36 @@
         </div>
       </div>
     </div>
+  </div>
 
-  <script src="js/legal-config.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script src="/js/legal-config.js"></script>
+  <script src="/js/qrcode.min.js"></script>
   <script>
     const API = '';
     const params = new URLSearchParams(window.location.search);
     const policyId = params.get('id');
-    const verifyNum = params.get('verify'); // VARIABLE DEL MODO PÚBLICO
+    const verifyNum = params.get('verify');
     const initialFormat = params.get('format') || 'carta';
     let policyData = null;
+    let isPrinting = false;
 
     function formatDate(d) {
       if (!d) return '—';
-      return new Date(d).toLocaleDateString('es-VE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const str = String(d).trim();
+      const pureMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})(?:$|[T\s]00:00:00(?:\.000)?Z?$)/);
+      if (pureMatch) {
+        return `${pureMatch[3]}/${pureMatch[2]}/${pureMatch[1]}`;
+      }
+      const parsed = new Date(d);
+      if (Number.isNaN(parsed.getTime())) return '—';
+      return parsed.toLocaleDateString('es-VE', { day: '2-digit', month: '2-digit', year: 'numeric' });
     }
 
     function formatCurrency(n) {
       if (n === undefined || n === null || n === '') return '—';
-      return '€ ' + Number(n).toLocaleString('es-VE', { minimumFractionDigits: 2 });
+      const num = Number(n);
+      if (!Number.isFinite(num)) return '—';
+      return '€ ' + num.toLocaleString('es-VE', { minimumFractionDigits: 2 });
     }
 
     function formatPolicyNumber(raw){
@@ -977,57 +1144,136 @@
     const covLabels = { basica: 'Básica', intermedia: 'Intermedia', premium: 'Premium' };
     const vehLabels = { automovil: 'Automóvil', camioneta: 'Camioneta', moto: 'Moto', camion: 'Camión', bus: 'Bus' };
 
+    function handleBack() {
+      if (window.opener && !window.opener.closed) {
+        window.close();
+        return;
+      }
+      if (window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+      window.location.href = localStorage.getItem('rcv_token') ? '/dashboard.html' : '/';
+    }
+
+    function showErrorState(title, message, options = {}) {
+      document.body.classList.add('print-blocked');
+      const loading = document.getElementById('loadingScreen');
+      if (loading) loading.classList.add('hidden');
+      const titleEl = document.getElementById('errorTitle');
+      const msgEl = document.getElementById('errorMessage');
+      const actionsEl = document.getElementById('errorActions');
+      if (titleEl) titleEl.textContent = title;
+      if (msgEl) msgEl.textContent = message;
+      if (actionsEl) {
+        actionsEl.innerHTML = '';
+        if (options.retry) {
+          const retryBtn = document.createElement('button');
+          retryBtn.className = 'primary';
+          retryBtn.textContent = 'Reintentar';
+          retryBtn.onclick = () => window.location.reload();
+          actionsEl.appendChild(retryBtn);
+        }
+        if (options.backUrl) {
+          const navBtn = document.createElement('button');
+          navBtn.className = options.retry ? '' : 'primary';
+          navBtn.textContent = options.backLabel || 'Volver';
+          navBtn.onclick = () => { window.location.href = options.backUrl; };
+          actionsEl.appendChild(navBtn);
+        } else if (!options.isPublic) {
+          const closeBtn = document.createElement('button');
+          closeBtn.textContent = 'Volver';
+          closeBtn.onclick = handleBack;
+          actionsEl.appendChild(closeBtn);
+        }
+      }
+      const errScreen = document.getElementById('errorScreen');
+      if (errScreen) errScreen.classList.add('active');
+    }
+
     async function loadPolicy() {
-      // === 📱 MODO PÚBLICO (Escaneo desde celular) ===
-      if (verifyNum) {
+
+      if (verifyNum !== null) {
         const controls = document.getElementById('screenControls');
-        if(controls) controls.style.display = 'none'; 
-        
+        if (controls) controls.style.display = 'none';
+
+        const cleanVerify = String(verifyNum).trim();
+        if (!/^[A-Za-z0-9-]{4,50}$/.test(cleanVerify)) {
+          showErrorState('Código de verificación inválido', 'El código de póliza proporcionado no tiene un formato válido.', { isPublic: true });
+          return;
+        }
+
         try {
-          const res = await fetch(`${API}/api/verify/${verifyNum}`);
-          if (!res.ok) throw new Error('Póliza no encontrada o inválida');
+          const sigParam = params.get('sig') ? `?sig=${encodeURIComponent(params.get('sig'))}` : '';
+          const res = await fetch(`${API}/api/verify/${encodeURIComponent(cleanVerify)}${sigParam}`, { cache: 'no-store' });
+          if (res.status === 429) throw new Error('Demasiadas consultas seguidas. Espere un minuto e intente nuevamente.');
+          if (res.status === 403) throw new Error('Firma de verificación QR inválida o alterada.');
+          if (!res.ok) throw new Error('Póliza no encontrada o inválida.');
           const data = await res.json();
+          if (!data || !data.policy) throw new Error('Datos de póliza incompletos.');
           policyData = data.policy;
           populateData(policyData);
-          showFormat('carnet'); // Forzar visualización de carnet
+          showFormat('carnet');
           document.getElementById('loadingScreen').classList.add('hidden');
         } catch (err) {
-          alert('Error: ' + err.message);
-          window.location.href = '/'; 
+          showErrorState('Póliza no verificada', err.message || 'No se pudo validar la póliza solicitada.', { isPublic: true, retry: true });
         }
-        return; 
+        return;
       }
 
-      // === 💻 MODO ADMIN (Desde el Dashboard) ===
       const token = localStorage.getItem('rcv_token');
       if (!token) { window.location.href = '/'; return; }
 
+      const cleanId = Number(policyId);
+      if (!policyId || !Number.isInteger(cleanId) || cleanId <= 0) {
+        showErrorState('Póliza no especificada', 'Abra este comprobante desde la lista de pólizas del panel.', {
+          backUrl: '/dashboard.html',
+          backLabel: 'Ir al Dashboard'
+        });
+        return;
+      }
+
       try {
-        const res = await fetch(`${API}/api/policies/${policyId}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const res = await fetch(`${API}/api/policies/${cleanId}`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+          cache: 'no-store'
         });
 
-        if (!res.ok) throw new Error('No se pudo cargar la póliza');
+        if (res.status === 401) {
+          localStorage.removeItem('rcv_token');
+          localStorage.removeItem('rcv_user');
+          showErrorState('Sesión expirada', 'Su sesión ha caducado. Inicie sesión nuevamente para imprimir.', {
+            backUrl: '/',
+            backLabel: 'Iniciar Sesión'
+          });
+          return;
+        }
+        if (!res.ok) throw new Error('No se pudo cargar la póliza solicitada.');
         const data = await res.json();
+        if (!data || !data.policy) throw new Error('Respuesta de póliza inválida.');
         policyData = data.policy;
         populateData(policyData);
         showFormat(initialFormat);
 
+        const btnCarta = document.getElementById('btnCarta');
+        if (btnCarta) btnCarta.disabled = false;
         document.getElementById('loadingScreen').classList.add('hidden');
       } catch (err) {
-        alert('Error: ' + err.message);
-        window.close();
+        showErrorState('Error al cargar la póliza', err.message || 'Ocurrió un error al consultar la póliza.', {
+          retry: true,
+          backUrl: '/dashboard.html',
+          backLabel: 'Ir al Dashboard'
+        });
       }
     }
 
-    // --- FUNCIÓN RESTAURADA: Rellena los datos en el HTML ---
     function populateData(p) {
       function setText(id, value) {
         const el = document.getElementById(id);
         if (!el) return;
         el.textContent = value;
       }
-      
+
       if (typeof LOGO !== 'undefined' && LOGO) {
         const cartaLogoEl = document.getElementById('cartaLogoIcon'); if (cartaLogoEl) cartaLogoEl.innerHTML = `<img src="${LOGO}" alt="Logo" style="height:50px;width:auto;object-fit:contain">`;
         const carnetLogoEl = document.getElementById('carnetLogoIcon'); if (carnetLogoEl) carnetLogoEl.innerHTML = `<img src="${LOGO}" alt="Logo" style="height:35px;width:auto;object-fit:contain">`;
@@ -1039,17 +1285,37 @@
       }
 
       const displayPolicyNum = formatPolicyNumber(p.policy_number);
-      setText('cartaPolicyNum', displayPolicyNum);
+      const safePlaca = String(p.placa || 'SINPLACA').replace(/[^A-Za-z0-9_-]/g, '');
+      document.title = `RCV_${displayPolicyNum}_${safePlaca}`;
+
+      const statusBadge = document.getElementById('policyStatusBadge');
+      const cartaEl = document.getElementById('printCarta');
+      const watermarkEl = document.getElementById('statusWatermark');
+      if (statusBadge && p.estado) {
+        const estadoNorm = String(p.estado).toLowerCase().trim();
+        const sigNote = p.signature_status === 'valid' ? ' · QR verificado' : '';
+        statusBadge.textContent = `${estadoNorm}${sigNote}`;
+        statusBadge.className = `status-pill ${estadoNorm}`;
+        statusBadge.style.display = 'inline-block';
+
+        if (cartaEl && watermarkEl) {
+          if (estadoNorm !== 'activa') {
+            watermarkEl.textContent = estadoNorm.toUpperCase();
+            cartaEl.classList.add('is-inactive-policy');
+          } else {
+            cartaEl.classList.remove('is-inactive-policy');
+          }
+        }
+      }
+
       setText('cartaPolicyNum_small', displayPolicyNum);
       setText('cartaEmitido', formatDate(p.created_at));
 
       setText('cartaClientName', p.client_name || '—');
       setText('cartaClientCedula', p.client_cedula || '—');
       setText('cartaClientTelefono', p.client_telefono || '—');
-      setText('cartaClientEmail', p.client_email || '—');
       setText('cartaClientDireccion', p.client_direccion || '—');
 
-      setText('cartaVehTipo', vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo);
       setText('cartaVehClase', vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo);
       setText('cartaVehMarca', p.marca);
       setText('cartaVehModelo', p.modelo);
@@ -1057,58 +1323,50 @@
       setText('cartaVehPlaca', p.placa);
       setText('cartaVehColor', p.color || '—');
       setText('cartaVehSerial', p.serial_carroceria || '—');
-      setText('cartaVehSerialMotor', p.serial_motor || '—')
+      setText('cartaVehSerialMotor', p.serial_motor || '—');
 
-      setText('cartaCobertura', covLabels[p.cobertura] || p.cobertura);
-      
-      const primaEl = document.getElementById('cartaPrima'); if (primaEl) primaEl.textContent = formatCurrency(p.prima);
-      const montoEl = document.getElementById('cartaMonto'); if (montoEl) montoEl.textContent = formatCurrency(p.prima);
       setText('cartaFechaInicio', formatDate(p.fecha_inicio));
       setText('cartaFechaFin', formatDate(p.fecha_fin));
-      setText('cartaNotas', p.notas || 'Sin observaciones.');
 
       const cartaLegalEl = document.getElementById('cartaLegal');
       if (cartaLegalEl && typeof LEGAL !== 'undefined') {
-          cartaLegalEl.innerHTML = `${LEGAL.registro}<br>`;
+        cartaLegalEl.innerHTML = `${LEGAL.registro}<br>`;
       }
 
       const name = p.client_name || '—';
-
-      const carnetPolicyNumEl = document.getElementById('carnetPolicyNum');
-      if (carnetPolicyNumEl) {
-        carnetPolicyNumEl.textContent = `Póliza Nro. ${p.policy_number}`; 
-      }
-
-      const carnetNumEl = document.getElementById('carnetPolicyNum'); if (carnetNumEl) carnetNumEl.textContent = displayPolicyNum;
+      setText('carnetPolicyNum', displayPolicyNum);
       setText('carnetClientName', name);
       setText('carnetClientCedula', p.client_cedula || '—');
       setText('carnetCoberturaFront', covLabels[p.cobertura] || p.cobertura);
       setText('carnetFechaEmision', formatDate(p.created_at));
       setText('carnetFechaVenc', formatDate(p.fecha_fin));
-      setText('carnetCoberturaBadge', covLabels[p.cobertura] || p.cobertura);
-      
-      setText('carnetVehTipo', vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo);
+
       setText('carnetPlaca', p.placa);
       setText('carnetMarcaModelo', `${p.marca} ${p.modelo}`);
       setText('carnetAnio', p.anio);
-      setText('carnetColor', p.color || '—');
       setText('carnetSerial', p.serial_carroceria || '—');
       setText('carnetSerialMotor', p.serial_motor || '—');
 
       const carnetLegalEl = document.getElementById('carnetLegal');
       if (carnetLegalEl && typeof LEGALCARNET !== 'undefined') {
-          carnetLegalEl.innerHTML = `${LEGALCARNET.registro}`;
+        carnetLegalEl.innerHTML = `${LEGALCARNET.registro}`;
       }
 
       (function populateCoverages() {
-        function formatEuro(n){
-          if (n === undefined || n === null || n === '') return '—';
-          return '€ ' + Number(n).toLocaleString('es-VE', { minimumFractionDigits: 2 });
-        }
-
         const body = document.getElementById('cartaCoverageBody');
         if (!body) return;
         body.innerHTML = '';
+
+        const defaults = [
+          ['RESPONSABILIDAD CIVIL-DAÑOS A COSAS', 2000],
+          ['RESPONSABILIDAD CIVIL-DAÑOS A PERSONAS', 2505],
+          ['EXCESO DE GARANTÍA', 250],
+          ['ASISTENCIA JURÍDICA', 250],
+          ['MUERTE DEL CONDUCTOR Y/O PASAJEROS', 500],
+          ['INVALIDEZ DEL CONDUCTOR Y/O PASAJEROS', 250],
+          ['GASTOS MÉDICOS', 250],
+          ['GASTOS FUNERARIOS', 250]
+        ];
 
         if (p.garantias && Array.isArray(p.garantias) && p.garantias.length) {
           p.garantias.forEach(g => {
@@ -1117,26 +1375,16 @@
             tdName.textContent = g.beneficio || g.nombre || g.label || '—';
             const tdAmt = document.createElement('td');
             tdAmt.className = 'coverage-amount';
-            tdAmt.textContent = (g.monto !== undefined && g.monto !== null) ? formatEuro(g.monto) : (g.cobertura || '—');
+            tdAmt.textContent = (g.monto !== undefined && g.monto !== null) ? formatCurrency(g.monto) : (g.cobertura || '—');
             tr.appendChild(tdName);
             tr.appendChild(tdAmt);
             body.appendChild(tr);
           });
         } else {
-          const defaults = [
-            ['RESPONSABILIDAD CIVIL-DAÑOS A COSAS', 2000],
-            ['RESPONSABILIDAD CIVIL-DAÑOS A PERSONAS', 2505],
-            ['EXCESO DE GARANTÍA', 250],
-            ['ASISTENCIA JURÍDICA', 250],
-            ['MUERTE DEL CONDUCTOR Y/O PASAJEROS', 500],
-            ['INVALIDEZ DEL CONDUCTOR Y/O PASAJEROS', 250],
-            ['GASTOS MÉDICOS', 250],
-            ['GASTOS FUNERARIOS', 250]
-          ];
-          defaults.forEach(([name, amt]) => {
+          defaults.forEach(([label, amt]) => {
             const tr = document.createElement('tr');
-            const tdName = document.createElement('td'); tdName.textContent = name;
-            const tdAmt = document.createElement('td'); tdAmt.className = 'coverage-amount'; tdAmt.textContent = formatEuro(amt);
+            const tdName = document.createElement('td'); tdName.textContent = label;
+            const tdAmt = document.createElement('td'); tdAmt.className = 'coverage-amount'; tdAmt.textContent = formatCurrency(amt);
             tr.appendChild(tdName); tr.appendChild(tdAmt);
             body.appendChild(tr);
           });
@@ -1144,10 +1392,13 @@
 
         const totalEl = document.getElementById('cartaMonto');
         if (totalEl) {
-          if (p.prima) totalEl.textContent = formatEuro(p.prima);
-          else {
-            const sum = (p.garantias && p.garantias.length) ? p.garantias.reduce((s, g) => s + (Number(g.monto) || 0), 0) : defaults.reduce((s, a) => s + Number(a[1]), 0);
-            totalEl.textContent = formatEuro(sum);
+          if (p.prima !== undefined && p.prima !== null && p.prima !== '') {
+            totalEl.textContent = formatCurrency(p.prima);
+          } else {
+            const sum = (p.garantias && p.garantias.length)
+              ? p.garantias.reduce((s, g) => s + (Number(g.monto) || 0), 0)
+              : defaults.reduce((s, a) => s + Number(a[1]), 0);
+            totalEl.textContent = formatCurrency(sum);
           }
         }
       })();
@@ -1155,43 +1406,64 @@
       generateQRCodes(p);
     }
 
-    // --- FUNCIÓN RESTAURADA: Genera el código QR público ---
     function generateQRCodes(policy) {
-      const formatted = formatPolicyNumber(policy.policy_number);
-      
-      // MODO PÚBLICO: enlace con ?verify=
-      const qrData = `${window.location.origin}/print.html?verify=${formatted}`;
-
-      const cartaQR = qrcode(0, 'M');
-      cartaQR.addData(qrData);
-      cartaQR.make();
-      const cartaImg = cartaQR.createDataURL(4, 0); 
-      const cartaImgEl = document.getElementById('cartaQR');
-      if (cartaImgEl) cartaImgEl.src = cartaImg;
-
-      const carnetQR = qrcode(0, 'M');
-      carnetQR.addData(qrData);
-      carnetQR.make();
-      const carnetImg = carnetQR.createDataURL(3, 0); 
       const carnetImgEl = document.getElementById('carnetQR');
-      if (carnetImgEl) carnetImgEl.src = carnetImg;
-    }
+      if (!carnetImgEl || typeof qrcode !== 'function') return;
 
-    // --- FUNCIONES RESTAURADAS: Controles de formato e impresión ---
-    function showFormat(format) {
-      const carta = document.getElementById('printCarta');
-      if (carta) carta.classList.remove('hidden');
-      if (format === 'carta' || format === 'carnet') {
-        document.body.className = 'mode-carta';
-        const fmt = document.getElementById('formatName'); if (fmt) fmt.textContent = 'Carta (incluye Carnet)';
-      } else {
-        const fmt = document.getElementById('formatName'); if (fmt) fmt.textContent = 'Carta (incluye Carnet)';
+      try {
+        const formatted = formatPolicyNumber(policy.policy_number);
+        const sigQuery = policy.qr_sig ? `&sig=${encodeURIComponent(policy.qr_sig)}` : '';
+        const qrData = `${window.location.origin}/print.html?verify=${formatted}${sigQuery}`;
+
+        const carnetQR = qrcode(0, 'M');
+        carnetQR.addData(qrData);
+        carnetQR.make();
+        carnetImgEl.src = carnetQR.createDataURL(3, 0);
+      } catch (err) {
+        console.error('Error generando QR:', err);
       }
     }
 
-    function switchAndPrint(format) {
-      showFormat(format);
-      setTimeout(() => window.print(), 300);
+    async function waitForPrintableAssets() {
+      const container = document.getElementById('printCarta');
+      if (!container) return;
+
+      const imgs = Array.from(container.querySelectorAll('img'));
+      const imgPromises = imgs.map(img => {
+        if (img.complete && img.naturalWidth > 0) {
+          return typeof img.decode === 'function' ? img.decode().catch(() => {}) : Promise.resolve();
+        }
+        return new Promise(resolve => {
+          const done = () => resolve();
+          img.addEventListener('load', done, { once: true });
+          img.addEventListener('error', done, { once: true });
+        });
+      });
+
+      const fontsPromise = (document.fonts && document.fonts.ready) ? document.fonts.ready.catch(() => {}) : Promise.resolve();
+      const timeoutPromise = new Promise(resolve => setTimeout(resolve, 2000));
+      await Promise.race([Promise.all([...imgPromises, fontsPromise]), timeoutPromise]);
+    }
+
+    function showFormat(format) {
+      const carta = document.getElementById('printCarta');
+      if (carta) carta.classList.remove('hidden');
+      document.body.classList.remove('print-blocked');
+      document.body.classList.add('mode-carta');
+      const fmt = document.getElementById('formatName');
+      if (fmt) fmt.textContent = 'Carta (incluye Carnet)';
+    }
+
+    async function switchAndPrint(format) {
+      if (!policyData || isPrinting) return;
+      isPrinting = true;
+      try {
+        showFormat(format);
+        await waitForPrintableAssets();
+        window.print();
+      } finally {
+        isPrinting = false;
+      }
     }
 
     loadPolicy();

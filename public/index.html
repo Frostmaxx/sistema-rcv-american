@@ -26,8 +26,6 @@
 
           <div id="authMessage"></div>
 
-          <div id="authMessage"></div>
-
           <form id="loginForm" onsubmit="handleLogin(event)">
             <div class="form-group">
               <label for="loginUser">Usuario</label>
@@ -42,69 +40,16 @@
             </button>
             
             <div style="margin-top: 1rem; text-align: center;">
-              <button type="button" class="btn btn-secondary btn-block" onclick="alert('Para problemas de acceso o recuperación de clave, comuníquese con el departamento de TI: soporte@tuempresa.com')" style="background: transparent; border: 1px solid var(--border); color: var(--gray);">
+              <button type="button" class="btn btn-secondary btn-block" onclick="alert('Para problemas de acceso o recuperación de clave, comuníquese con el administrador del sistema.')" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary);">
                 ¿Problemas para ingresar?
               </button>
             </div>
-          </form>
-          
-          <!-- Register Form -->
-          <form
-            id="registerForm"
-            style="display: none"
-            onsubmit="handleRegister(event)"
-          >
-            <div class="form-group">
-              <label for="regUser">Usuario</label>
-              <input
-                type="text"
-                id="regUser"
-                class="form-control"
-                placeholder="Elija un nombre de usuario"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label for="regEmail">Email</label>
-              <input
-                type="email"
-                id="regEmail"
-                class="form-control"
-                placeholder="correo@ejemplo.com"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label for="regPass">Contraseña</label>
-              <input
-                type="password"
-                id="regPass"
-                class="form-control"
-                placeholder="Mínimo 6 caracteres"
-                required
-                minlength="6"
-              />
-            </div>
-            <div class="form-group">
-              <label for="regPassConfirm">Confirmar Contraseña</label>
-              <input
-                type="password"
-                id="regPassConfirm"
-                class="form-control"
-                placeholder="Repita la contraseña"
-                required
-              />
-            </div>
-            <button type="submit" class="btn btn-primary btn-block" id="regBtn">
-              Crear Cuenta
-            </button>
           </form>
         </div>
       </div>
     </div>
 
     <script>
-      // Apply logo if available
       const logoPath = 'img/logo.png';
       const loginIcon = document.getElementById('loginLogoIcon');
       if (loginIcon) {

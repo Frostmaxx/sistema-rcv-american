@@ -5,3 +5,4 @@ db/*.sqlite
 public/uploads/
 *.log
 .DS_Store
+backups/
