@@ -17,7 +17,7 @@ async function ensureIndex(table, indexName, columnsSql) {
 }
 
 function buildPoolConfig() {
-  const connectionLimit = Math.max(2, Number(process.env.DB_CONNECTION_LIMIT) || 15);
+  const connectionLimit = Math.max(2, Number(process.env.DB_CONNECTION_LIMIT) || 10);
   const base = {
     waitForConnections: true,
     connectionLimit,
@@ -181,16 +181,19 @@ async function initDatabase() {
     )
   `);
 
-  await Promise.all([
-    ensureIndex('clients', 'idx_clients_created_at', 'created_at'),
-    ensureIndex('clients', 'idx_clients_nombre_apellido', 'nombre(50), apellido(50)'),
-    ensureIndex('policies', 'idx_policies_created_at', 'created_at'),
-    ensureIndex('policies', 'idx_policies_estado_created', 'estado, created_at'),
-    ensureIndex('policies', 'idx_policies_placa', 'placa'),
-    ensureIndex('policies', 'idx_policies_cobertura', 'cobertura'),
-    ensureIndex('audit_logs', 'idx_audit_created_at', 'created_at'),
-    ensureIndex('audit_logs', 'idx_audit_entity', 'entity, entity_id')
-  ]);
+  const indexes = [
+    ['clients', 'idx_clients_created_at', 'created_at'],
+    ['clients', 'idx_clients_nombre_apellido', 'nombre(50), apellido(50)'],
+    ['policies', 'idx_policies_created_at', 'created_at'],
+    ['policies', 'idx_policies_estado_created', 'estado, created_at'],
+    ['policies', 'idx_policies_placa', 'placa'],
+    ['policies', 'idx_policies_cobertura', 'cobertura'],
+    ['audit_logs', 'idx_audit_created_at', 'created_at'],
+    ['audit_logs', 'idx_audit_entity', 'entity, entity_id']
+  ];
+  for (const [table, indexName, columnsSql] of indexes) {
+    await ensureIndex(table, indexName, columnsSql);
+  }
 
   await ensureUsersTableAndEmergencySuperadmin();
   await expireOverduePolicies({ force: true });

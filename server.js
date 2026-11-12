@@ -11,7 +11,8 @@ const { securityHeaders, buildCorsOptions } = require('./middleware/security');
 
 const app = express();
 
-app.set('trust proxy', 1);
+const trustProxyRaw = process.env.TRUST_PROXY;
+app.set('trust proxy', trustProxyRaw !== undefined ? (trustProxyRaw === 'true' ? true : Number(trustProxyRaw) || 1) : 1);
 app.use(securityHeaders);
 app.use(compression({ threshold: 512 }));
 app.use(cors(buildCorsOptions()));
@@ -105,8 +106,9 @@ async function startServer() {
   const onListen = () => {
     console.log(`🛡️  Sistema RCV ejecutándose en el puerto ${rawPort}`);
   };
+  const customHost = (process.env.HOST || '').trim();
   const server = Number.isInteger(numericPort) && numericPort > 0
-    ? app.listen(numericPort, process.env.HOST || '0.0.0.0', onListen)
+    ? (customHost ? app.listen(numericPort, customHost, onListen) : app.listen(numericPort, onListen))
     : app.listen(rawPort, onListen);
 
   const shutdown = async () => {

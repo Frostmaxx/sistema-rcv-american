@@ -67,10 +67,17 @@ Las variables `EMERGENCY_SUPERADMIN_USER` y `EMERGENCY_SUPERADMIN_PASSWORD` (o `
    - `CORS_ORIGIN=https://tudominio.com`
    - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` (o `DATABASE_URL` + `DB_SSL=true` si tu proveedor exige SSL)
    - `EMERGENCY_SUPERADMIN_USER`, `EMERGENCY_SUPERADMIN_EMAIL` y `EMERGENCY_SUPERADMIN_PASSWORD` (o `EMERGENCY_SUPERADMIN_PASSWORD_HASH`)
-3. **Instalación y arranque en el servidor:**
-   - Archivo de inicio: `server.js` (`npm start`).
-   - Instalar dependencias de producción: `npm install --omit=dev`.
-   - Verificar salud del servicio en `GET /api/health` (`{"status":"ok","db":"connected"}`).
+3. **Instalación y arranque en Shared Hosting con Node.js (cPanel / Plesk / DirectAdmin / Hostinger):**
+   - Clona el repositorio desde **Git™ Version Control** (rama `main`) en una carpeta del hosting (ej. `/home/usuario/sistema-rcv`).
+   - En **Setup Node.js App** (Phusion Passenger):
+     - **Node.js version:** `18` o `20` (LTS).
+     - **Application mode:** `Production`.
+     - **Application root:** carpeta donde clonaste el repo.
+     - **Application URL:** dominio o subdominio raíz (ej. `rcv.tudominio.com`).
+     - **Application startup file:** `app.js` o `server.js` (ambos funcionan).
+   - Presiona **Run NPM Install** (o ejecuta `npm install --omit=dev`; todas las dependencias son JS puro, sin compilación nativa).
+   - Carga las variables de entorno en el panel de la app Node.js (o en un archivo `.env` dentro del *Application root*) y reinicia la aplicación.
+   - Verifica el arranque entrando a `https://tudominio.com/api/health` (`{"status":"ok","db":"connected"}`).
 
 ## Estructura del Proyecto
 
