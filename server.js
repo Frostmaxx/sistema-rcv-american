@@ -10,7 +10,6 @@ const { verifyPolicySignature } = require('./utils/qr-signature');
 const { securityHeaders, buildCorsOptions } = require('./middleware/security');
 
 const app = express();
-const PORT = process.env.PORT || 4000;
 
 app.set('trust proxy', 1);
 app.use(securityHeaders);
@@ -101,9 +100,14 @@ async function startServer() {
     res.status(500).json({ error: 'Error interno del servidor.' });
   });
 
-  const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🛡️  Sistema RCV ejecutándose en el puerto ${PORT}`);
-  });
+  const rawPort = process.env.PORT || 4000;
+  const numericPort = Number(rawPort);
+  const onListen = () => {
+    console.log(`🛡️  Sistema RCV ejecutándose en el puerto ${rawPort}`);
+  };
+  const server = Number.isInteger(numericPort) && numericPort > 0
+    ? app.listen(numericPort, process.env.HOST || '0.0.0.0', onListen)
+    : app.listen(rawPort, onListen);
 
   const shutdown = async () => {
     server.close(async () => {

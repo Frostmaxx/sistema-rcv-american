@@ -56,6 +56,22 @@ Endpoint de monitoreo: `GET /api/health`
 
 Las variables `EMERGENCY_SUPERADMIN_USER` y `EMERGENCY_SUPERADMIN_PASSWORD` (o `EMERGENCY_SUPERADMIN_PASSWORD_HASH`) en `.env` garantizan una cuenta `superadmin` protegida contra eliminación/degradación y capaz de restaurar la tabla `users` automáticamente en caso de pérdida o corrupción.
 
+## Despliegue en Hosting desde GitHub
+
+1. **Base de datos SQL (MySQL 8+ / MariaDB 10.6+):**
+   - Crea una base de datos vacía en tu panel (cPanel/phpMyAdmin, Plesk, Railway, etc.) y anota `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME` (o `DATABASE_URL`).
+   - Opcionalmente importa [db/schema.sql](db/schema.sql) (o un respaldo SQL propio si migras datos existentes); al iniciar, `server.js` también crea automáticamente tablas e índices faltantes.
+2. **Variables de entorno en el hosting (`.env` o panel del proveedor):**
+   - `NODE_ENV=production`
+   - `JWT_SECRET` (clave aleatoria larga de 32+ caracteres)
+   - `CORS_ORIGIN=https://tudominio.com`
+   - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` (o `DATABASE_URL` + `DB_SSL=true` si tu proveedor exige SSL)
+   - `EMERGENCY_SUPERADMIN_USER`, `EMERGENCY_SUPERADMIN_EMAIL` y `EMERGENCY_SUPERADMIN_PASSWORD` (o `EMERGENCY_SUPERADMIN_PASSWORD_HASH`)
+3. **Instalación y arranque en el servidor:**
+   - Archivo de inicio: `server.js` (`npm start`).
+   - Instalar dependencias de producción: `npm install --omit=dev`.
+   - Verificar salud del servicio en `GET /api/health` (`{"status":"ok","db":"connected"}`).
+
 ## Estructura del Proyecto
 
 - `public/`: Frontend (HTML, CSS, JS, imágenes).

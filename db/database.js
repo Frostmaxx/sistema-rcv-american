@@ -16,19 +16,55 @@ async function ensureIndex(table, indexName, columnsSql) {
   }
 }
 
-async function initDatabase() {
-  pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 3306,
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'rcv_db',
+function buildPoolConfig() {
+  const connectionLimit = Math.max(2, Number(process.env.DB_CONNECTION_LIMIT) || 15);
+  const base = {
     waitForConnections: true,
-    connectionLimit: 20,
+    connectionLimit,
     queueLimit: 0,
     enableKeepAlive: true,
-    keepAliveInitialDelay: 10000
-  });
+    keepAliveInitialDelay: 10000,
+    charset: 'utf8mb4'
+  };
+
+  const urlRaw = (process.env.DATABASE_URL || process.env.MYSQL_URL || '').trim();
+  let cfg;
+  let sslFromUrl = false;
+
+  if (urlRaw) {
+    const parsed = new URL(urlRaw);
+    cfg = {
+      ...base,
+      host: parsed.hostname || 'localhost',
+      port: Number(parsed.port) || 3306,
+      user: decodeURIComponent(parsed.username || 'root'),
+      password: decodeURIComponent(parsed.password || ''),
+      database: parsed.pathname.replace(/^\//, '') || 'rcv_db'
+    };
+    const sslParam = (parsed.searchParams.get('ssl') || parsed.searchParams.get('ssl-mode') || '').toLowerCase();
+    sslFromUrl = sslParam === 'true' || sslParam === 'required' || sslParam === 'verify_ca' || sslParam === 'verify_identity';
+  } else {
+    cfg = {
+      ...base,
+      host: process.env.DB_HOST || 'localhost',
+      port: Number(process.env.DB_PORT) || 3306,
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || 'rcv_db'
+    };
+  }
+
+  if (sslFromUrl || String(process.env.DB_SSL || '').toLowerCase() === 'true') {
+    cfg.ssl = {
+      rejectUnauthorized: String(process.env.DB_SSL_REJECT_UNAUTHORIZED || 'true').toLowerCase() !== 'false'
+    };
+  }
+
+  return cfg;
+}
+
+async function initDatabase() {
+  pool = mysql.createPool(buildPoolConfig());
 
   console.log('🔄 Conectando a MySQL...');
 
