@@ -464,296 +464,204 @@
       margin: 4rem auto 2rem;
     }
 
+    /* ══════════════════════════════════════════════════════════
+       CARNET DE CIRCULACIÓN (DIAGRAMACIÓN EXACTA DUAL FRENTE / REVERSO)
+       ══════════════════════════════════════════════════════════ */
+    .carnet-page {
+      display: flex !important;
+      flex-direction: row !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 0.22in !important;
+      margin: 2.5rem auto 1.5rem !important;
+      padding: 0.2in 0 !important;
+      page-break-before: always;
+    }
+
     .carnet-card {
-      width: 3.375in;
-      height: 2.125in;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      position: relative;
-      background: white;
+      width: 3.375in !important;
+      height: 2.125in !important;
+      min-width: 3.375in !important;
+      max-width: 3.375in !important;
+      min-height: 2.125in !important;
+      max-height: 2.125in !important;
+      border-radius: 14px !important;
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.06) !important;
+      position: relative !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
+      flex-shrink: 0 !important;
     }
 
-    .carnet-front {
+    /* Frente del Carnet (Izquierda) */
+    .carnet-front-content {
       height: 100%;
+      padding: 0.12in 0.22in 0.12in;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-      background: #fff;
+      justify-content: space-between;
+      box-sizing: border-box;
+      background: #ffffff;
     }
 
-    .carnet-header-band {
-      color: white;
-      padding: 0.28rem 0.5rem;
+    .carnet-front-header {
       display: flex;
       flex-direction: column;
-      justify-content: center;
-    }
-
-    .carnet-brand-icon {
-      width: auto;
-      height: auto;
-      background: none;
-      display: flex;
-      justify-content: center;
       align-items: center;
+      text-align: center;
       flex-shrink: 0;
     }
 
-    .carnet-policy-num {
-      font-size: 0.4rem;
-      font-weight: 700;
-      background: rgba(255,255,255,0.15);
-      padding: 0.1rem 0.3rem;
-      border-radius: 4px;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-    }
-
-    .carnet-body {
-      flex: 1;
+    .carnet-brand-logo {
+      height: 28px;
       display: flex;
-      padding: 0.2rem 0.5rem;
-      gap: 0.2rem;
+      align-items: center;
+      justify-content: center;
     }
 
-    .carnet-data-area {
-      flex: 1;
+    .carnet-brand-logo img {
+      height: 28px;
+      width: auto;
+      max-width: 1.8in;
+      object-fit: contain;
+      display: block;
+    }
+
+    .carnet-legal-subtitle {
+      font-size: 0.44rem;
+      font-weight: 500;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-top: 5.5px;
+      line-height: 1.1;
+      text-align: center;
+    }
+
+    .carnet-front-body {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 0.13rem;
+      gap: 3.5px;
+      flex: 1;
+      margin: 2px 0 0.07in;
     }
 
-    .carnet-legal {
-      text-align: center;
-      font-size: 0.5rem;
-      color: #94a3b8;
-      padding: 0.18rem 0.5rem;
-      line-height: 1.3;
-    }
-    .carnet-data-row {
+    .c-item {
       display: flex;
-      gap: 0.04rem;
       flex-direction: column;
     }
 
-    .carnet-data-row .d-label {
-      font-size: 0.6rem;
+    .c-label {
+      font-size: 0.45rem;
+      font-weight: 600;
       color: #94a3b8;
       text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.04em;
       line-height: 1;
+      margin-bottom: 1px;
     }
 
-    .carnet-data-row .d-value {
-      font-size: 0.6rem;
+    .c-val {
+      font-size: 0.58rem;
       font-weight: 600;
       color: #1e293b;
       line-height: 1.15;
+      text-transform: uppercase;
       overflow-wrap: anywhere;
       word-break: break-word;
     }
 
-    .carnet-data-row .d-value.big {
-      font-size: 0.65rem;
-      font-weight: 800;
+    .c-val.bold {
+      font-size: 0.64rem;
+      font-weight: 700;
       color: #0f172a;
     }
 
-    .carnet-data-inline {
+    .carnet-dates-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.1rem;
-    }
-
-    .carnet-bottom-strip {
-      background: #f8fafc;
-      border-top: 1px solid #e2e8f0;
-      padding: 0.18rem 0.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .carnet-date-group {
-      display: flex;
       gap: 0.5rem;
+      margin-top: 1px;
     }
 
-    .carnet-date-item {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .carnet-date-item .dt-label {
-      font-size: 0.24rem;
-      color: #94a3b8;
-      text-transform: uppercase;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-    }
-
-    .carnet-date-item .dt-value {
-      font-size: 0.38rem;
-      font-weight: 700;
-      color: #334155;
-    }
-
-    .carnet-cobertura-badge {
-      font-size: 0.34rem;
-      font-weight: 700;
-      color: #4338ca;
-      background: #e0e7ff;
-      padding: 0.1rem 0.35rem;
-      border-radius: 5px;
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-    }
-
-    .carnet-back {
-      background: white;
-      color: #1e293b;
+    /* Trasera del Carnet (Derecha) */
+    .carnet-back-content {
       height: 100%;
+      padding: 0.12in 0.22in 0.12in;
       display: flex;
       flex-direction: column;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
+      justify-content: space-between;
+      box-sizing: border-box;
+      background: #ffffff;
     }
 
-    .carnet-header-title {
-      margin-top: 1rem;
+    .carnet-back-header {
       text-align: center;
-      font-size: 0.55rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      line-height: 0.6rem;
-    }
-
-    .carnet-header-subtitle {
-      text-align: center;
-      font-size: 0.55rem;
-      opacity: 0.6;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-    }
-
-    .carnet-policy-num {
-      padding: 0.4rem 0.2rem;
-      font-size: 0.6rem;
-      color: var(--dark);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      flex-direction: column;
-      margin-left: 0.4rem;
-      font-weight: 800;
-    }
-
-    .carnet-back-body {
-      flex: 1;
-      padding: 0.3rem 0.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content:flex-start;
-    }
-
-    .carnet-back-grid {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 0.22rem 0.5rem;
-      max-width: calc(100% - 0.92in);
-    }
-
-    .carnet-back-field .cb-label {
-      font-size: 0.6rem;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      font-weight: 700;
-    }
-
-    .carnet-back-field .cb-value {
-      font-size: 0.55rem;
+      font-size: 0.52rem;
       font-weight: 600;
-      color: #334155;
-      margin-top: 0.02rem;
-      overflow-wrap: anywhere;
-      word-break: break-word;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      line-height: 1;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .carnet-back-middle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.1in;
+      flex: 1;
+      margin: 2px 0;
+    }
+
+    .carnet-vehicle-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 3px 8px;
+      flex: 1;
+    }
+
+    .carnet-col {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .carnet-qr-box {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 3px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .carnet-qr-box img {
+      width: 0.74in;
+      height: 0.74in;
+      display: block;
     }
 
     .carnet-back-footer {
       text-align: center;
-      font-size: 0.32rem;
-      color: #94a3b8;
-      border-top: 1px solid #e2e8f0;
-      padding: 0.18rem 0.5rem;
-      line-height: 1.3;
+      line-height: 1;
+      margin-bottom: 0.07in;
+      flex-shrink: 0;
     }
 
-    .carnet-label {
-      text-align: center;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--gray);
-      margin-bottom: 0.25rem;
-    }
-
-    .carta-qr {
-      float: right;
-      text-align: center;
-      margin: 0 0 1rem 1rem;
-      background: white;
-      padding: 0.4rem;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    .carta-qr img {
-      display: block;
-      width: 1in;
-      height: 1in;
-      margin-bottom: 0.2rem;
-    }
-
-    .carta-qr-label {
-      font-size: 0.5rem;
-      color: #64748b;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .carnet-back-qr {
-      flex: 1;
-      display: flex;
-      justify-content: flex-end;
-      top: 6.0rem;
-      right: 0.4rem;
-      text-align: center;
-    }
-
-    .carnet-back-qr img {
-      display: block;
-      width: 0.8in;
-      height: 0.8in;
-      border: 1px solid #e5e7eb;
-      border-radius: 4px;
-    }
-
-    .carnet-qr-label {
-      font-size: 0.2rem;
-      color: #94a3b8;
+    .carnet-policy-number {
+      font-size: 0.78rem;
       font-weight: 700;
-      margin-top: 0.2rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
+      color: #1e293b;
+      letter-spacing: 0.08em;
     }
-
-    .carnet-page { page-break-before: always; display: flex; justify-content: center; margin-top: 2.0rem; gap: 0; padding: 0.2in 0; }
-    .carnet-page .carnet-card { margin: 0; border-radius: 6px; }
 
     .hidden { display: none !important; }
 
@@ -761,6 +669,14 @@
       body { background: white !important; }
       .screen-controls, .format-label, .loading-screen, .error-screen { display: none !important; }
       body.print-blocked .print-carta { display: none !important; }
+
+      body.mode-carnet-only .print-carta > :not(#carnetPage) {
+        display: none !important;
+      }
+      body.mode-carnet-only .carnet-page {
+        margin: 0.5in auto !important;
+        page-break-before: auto !important;
+      }
 
       .print-carta {
         margin: 0 !important;
@@ -894,6 +810,9 @@
     <button class="btn-print-carta" onclick="switchAndPrint('carta')" id="btnCarta" disabled>
       📄 Imprimir Carta
     </button>
+    <button class="btn-print-carnet" onclick="switchAndPrint('carnet')" id="btnCarnet" style="background:#0284c7;color:#fff;border:none;border-radius:8px;padding:0.6rem 1.1rem;font-weight:600;cursor:pointer;font-size:0.875rem;box-shadow:0 2px 6px rgba(2,132,199,0.25);" disabled>
+      🪪 Imprimir Carnet
+    </button>
     <button class="btn-back" onclick="handleBack()">
       ← Volver
     </button>
@@ -967,16 +886,20 @@
       <div class="section-heading">DATOS DEL VEHÍCULO</div>
       <div class="vehicle-grid">
         <div>
+          <div class="client-label">Tipo</div>
+          <div class="client-value" id="cartaVehTipo">—</div>
+        </div>
+        <div>
+          <div class="client-label">Clase</div>
+          <div class="client-value" id="cartaVehClase">—</div>
+        </div>
+        <div>
           <div class="client-label">Marca</div>
           <div class="client-value" id="cartaVehMarca">—</div>
         </div>
         <div>
           <div class="client-label">Modelo</div>
           <div class="client-value" id="cartaVehModelo">—</div>
-        </div>
-        <div>
-          <div class="client-label">Clase</div>
-          <div class="client-value" id="cartaVehClase">—</div>
         </div>
         <div>
           <div class="client-label">Color</div>
@@ -990,13 +913,13 @@
           <div class="client-label">Año</div>
           <div class="client-value" id="cartaVehAnio">—</div>
         </div>
-        <div style="grid-column: span 1;">
+        <div>
+          <div class="client-label">Uso</div>
+          <div class="client-value" id="cartaVehUso">—</div>
+        </div>
+        <div style="grid-column: span 2;">
           <div class="client-label">Serial Carrocería</div>
           <div class="client-value" id="cartaVehSerial">—</div>
-        </div>
-        <div style="grid-column: span 1;">
-          <div class="client-label">Serial Motor</div>
-          <div class="client-value" id="cartaVehSerialMotor">—</div>
         </div>
       </div>
     </div>
@@ -1030,73 +953,96 @@
     </div>
 
     <div class="carnet-page" id="carnetPage">
-      <div class="carnet-card" style="width:3.375in;">
-        <div class="carnet-front">
-          <div class="carnet-header-band">
-            <div class="carnet-brand-icon" id="carnetLogoIcon"></div>
-            <div class="carnet-legal" id="carnetLegal"><p>SUNACOOP Nro 381558, SUDEASEGU Nro ES - 66</p></div>
+      <!-- Frente del Carnet (Izquierda) -->
+      <div class="carnet-card">
+        <div class="carnet-front-content">
+          <div class="carnet-front-header">
+            <div class="carnet-brand-logo" id="carnetLogoIcon">
+              <img src="img/logo.png" alt="Logo">
+            </div>
+            <div class="carnet-legal-subtitle" id="carnetLegal">SUNACOOP Nro 381558, SUDEASEGU Nro ES - 66</div>
           </div>
 
-          <div class="carnet-body">
-            <div class="carnet-data-area">
-              <div class="carnet-data-row">
-                <span class="d-label">Nombre del Asegurado</span>
-                <span class="d-value big" id="carnetClientName">—</span>
+          <div class="carnet-front-body">
+            <div class="c-item">
+              <span class="c-label">NOMBRE DEL ASEGURADO</span>
+              <span class="c-val bold" id="carnetClientName">—</span>
+            </div>
+            <div class="c-item">
+              <span class="c-label">CÉDULA DE IDENTIDAD</span>
+              <span class="c-val" id="carnetClientCedula">—</span>
+            </div>
+            <div class="c-item">
+              <span class="c-label">COBERTURA CONTRATADA</span>
+              <span class="c-val" id="carnetCoberturaFront">—</span>
+            </div>
+            <div class="carnet-dates-row">
+              <div class="c-item">
+                <span class="c-label">FECHA EMISIÓN</span>
+                <span class="c-val" id="carnetFechaEmision">—</span>
               </div>
-              <div class="carnet-data-row">
-                <span class="d-label">Cédula de Identidad</span>
-                <span class="d-value" id="carnetClientCedula">—</span>
-              </div>
-              <div class="carnet-data-row">
-                <span class="d-label">Cobertura Contratada</span>
-                <span class="d-value" id="carnetCoberturaFront">—</span>
-              </div>
-              <div class="carnet-data-inline">
-                <div class="carnet-data-row">
-                  <span class="d-label">Fecha Emisión</span>
-                  <span class="d-value" id="carnetFechaEmision">—</span>
-                </div>
-                <div class="carnet-data-row">
-                  <span class="d-label">Vencimiento</span>
-                  <span class="d-value" id="carnetFechaVenc">—</span>
-                </div>
+              <div class="c-item">
+                <span class="c-label">VENCIMIENTO</span>
+                <span class="c-val" id="carnetFechaVenc">—</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="carnet-card" style="width:3.375in;">
-        <div class="carnet-back" style="position:relative;">
-          <div class="carnet-header-title">Certificado de Seguro RCV</div>
-              <div class="carnet-header-subtitle">Responsabilidad Civil Vehicular</div>
-              <div class="carnet-policy-num" id="carnetPolicyNum">—</div>
-          <div class="carnet-back-qr" style="position:absolute;top:4rem;right:0.4rem;">
-            <img id="carnetQR" src="" alt="QR">
-          </div>
-          <div class="carnet-back-body" style="padding:0.6rem 0.8rem;">
-            <div class="carnet-back-grid">
-              <div class="carnet-back-field">
-                <div class="cb-label">Placa</div>
-                <div class="cb-value" id="carnetPlaca">—</div>
+      <!-- Trasera del Carnet (Derecha) -->
+      <div class="carnet-card">
+        <div class="carnet-back-content">
+          <div class="carnet-back-header">CERTIFICADO DE SEGURO RCV</div>
+
+          <div class="carnet-back-middle">
+            <div class="carnet-vehicle-grid">
+              <div class="carnet-col">
+                <div class="c-item">
+                  <span class="c-label">MARCA</span>
+                  <span class="c-val" id="carnetMarca"></span>
+                </div>
+                <div class="c-item">
+                  <span class="c-label">MODELO</span>
+                  <span class="c-val" id="carnetModelo"></span>
+                </div>
+                <div class="c-item">
+                  <span class="c-label">CLASE</span>
+                  <span class="c-val" id="carnetClase"></span>
+                </div>
+                <div class="c-item">
+                  <span class="c-label">PLACA</span>
+                  <span class="c-val" id="carnetPlaca"></span>
+                </div>
               </div>
-              <div class="carnet-back-field">
-                <div class="cb-label">Marca / Modelo</div>
-                <div class="cb-value" id="carnetMarcaModelo">—</div>
-              </div>
-              <div class="carnet-back-field">
-                <div class="cb-label">Año</div>
-                <div class="cb-value" id="carnetAnio">—</div>
-              </div>
-              <div class="carnet-back-field">
-                <div class="cb-label">Serial</div>
-                <div class="cb-value" id="carnetSerial">—</div>
-              </div>
-              <div class="carnet-back-field">
-                <div class="cb-label">Serial Motor</div>
-                <div class="cb-value" id="carnetSerialMotor">—</div>
+
+              <div class="carnet-col">
+                <div class="c-item">
+                  <span class="c-label">TIPO</span>
+                  <span class="c-val" id="carnetTipo"></span>
+                </div>
+                <div class="c-item">
+                  <span class="c-label">USO</span>
+                  <span class="c-val" id="carnetUso"></span>
+                </div>
+                <div class="c-item">
+                  <span class="c-label">AÑO</span>
+                  <span class="c-val" id="carnetAnio"></span>
+                </div>
+                <div class="c-item">
+                  <span class="c-label">SERIAL<br>CARROCERÍA</span>
+                  <span class="c-val" id="carnetSerial"></span>
+                </div>
               </div>
             </div>
+
+            <div class="carnet-qr-box">
+              <img id="carnetQR" src="" alt="QR">
+            </div>
+          </div>
+
+          <div class="carnet-back-footer">
+            <div class="carnet-policy-number" id="carnetPolicyNum">—</div>
           </div>
         </div>
       </div>
@@ -1257,6 +1203,8 @@
 
         const btnCarta = document.getElementById('btnCarta');
         if (btnCarta) btnCarta.disabled = false;
+        const btnCarnet = document.getElementById('btnCarnet');
+        if (btnCarnet) btnCarnet.disabled = false;
         document.getElementById('loadingScreen').classList.add('hidden');
       } catch (err) {
         showErrorState('Error al cargar la póliza', err.message || 'Ocurrió un error al consultar la póliza.', {
@@ -1316,14 +1264,15 @@
       setText('cartaClientTelefono', p.client_telefono || '—');
       setText('cartaClientDireccion', p.client_direccion || '—');
 
-      setText('cartaVehClase', vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo);
-      setText('cartaVehMarca', p.marca);
-      setText('cartaVehModelo', p.modelo);
-      setText('cartaVehAnio', p.anio);
-      setText('cartaVehPlaca', p.placa);
+      setText('cartaVehTipo', vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo || '—');
+      setText('cartaVehClase', p.clase || p.serial_motor || '—');
+      setText('cartaVehUso', p.uso || '—');
+      setText('cartaVehMarca', p.marca || '—');
+      setText('cartaVehModelo', p.modelo || '—');
+      setText('cartaVehAnio', p.anio || '—');
+      setText('cartaVehPlaca', p.placa || '—');
       setText('cartaVehColor', p.color || '—');
       setText('cartaVehSerial', p.serial_carroceria || '—');
-      setText('cartaVehSerialMotor', p.serial_motor || '—');
 
       setText('cartaFechaInicio', formatDate(p.fecha_inicio));
       setText('cartaFechaFin', formatDate(p.fecha_fin));
@@ -1333,23 +1282,37 @@
         cartaLegalEl.innerHTML = `${LEGAL.registro}<br>`;
       }
 
-      const name = p.client_name || '—';
+      const name = p.client_name ? p.client_name.toUpperCase() : '—';
       setText('carnetPolicyNum', displayPolicyNum);
       setText('carnetClientName', name);
       setText('carnetClientCedula', p.client_cedula || '—');
-      setText('carnetCoberturaFront', covLabels[p.cobertura] || p.cobertura);
-      setText('carnetFechaEmision', formatDate(p.created_at));
+
+      let cobText = covLabels[p.cobertura] || p.cobertura || 'Básica';
+      if (typeof cobText === 'string') {
+        const lowerCob = cobText.toLowerCase();
+        if (lowerCob.includes('básica') || lowerCob.includes('basica')) {
+          const vType = (vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo || 'AUTOMOVIL').toUpperCase();
+          cobText = `PLAN DE LEY PARA ${vType}`;
+        } else {
+          cobText = cobText.toUpperCase();
+        }
+      }
+      setText('carnetCoberturaFront', cobText);
+      setText('carnetFechaEmision', formatDate(p.created_at || p.fecha_inicio));
       setText('carnetFechaVenc', formatDate(p.fecha_fin));
 
-      setText('carnetPlaca', p.placa);
-      setText('carnetMarcaModelo', `${p.marca} ${p.modelo}`);
-      setText('carnetAnio', p.anio);
-      setText('carnetSerial', p.serial_carroceria || '—');
-      setText('carnetSerialMotor', p.serial_motor || '—');
+      setText('carnetMarca', p.marca ? p.marca.toUpperCase() : '');
+      setText('carnetModelo', p.modelo ? p.modelo.toUpperCase() : '');
+      setText('carnetClase', (p.clase || p.serial_motor) ? (p.clase || p.serial_motor).toUpperCase() : '');
+      setText('carnetPlaca', p.placa ? p.placa.toUpperCase() : '');
+      setText('carnetTipo', (vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo) ? (vehLabels[p.tipo_vehiculo] || p.tipo_vehiculo).toUpperCase() : '');
+      setText('carnetUso', p.uso ? p.uso.toUpperCase() : '');
+      setText('carnetAnio', p.anio ? String(p.anio).toUpperCase() : '');
+      setText('carnetSerial', p.serial_carroceria ? p.serial_carroceria.toUpperCase() : '');
 
       const carnetLegalEl = document.getElementById('carnetLegal');
       if (carnetLegalEl && typeof LEGALCARNET !== 'undefined') {
-        carnetLegalEl.innerHTML = `${LEGALCARNET.registro}`;
+        carnetLegalEl.textContent = LEGALCARNET.registro;
       }
 
       (function populateCoverages() {
@@ -1449,9 +1412,17 @@
       const carta = document.getElementById('printCarta');
       if (carta) carta.classList.remove('hidden');
       document.body.classList.remove('print-blocked');
-      document.body.classList.add('mode-carta');
       const fmt = document.getElementById('formatName');
-      if (fmt) fmt.textContent = 'Carta (incluye Carnet)';
+
+      if (format === 'carnet') {
+        document.body.classList.remove('mode-carta');
+        document.body.classList.add('mode-carnet-only');
+        if (fmt) fmt.textContent = 'Carnet RCV';
+      } else {
+        document.body.classList.remove('mode-carnet-only');
+        document.body.classList.add('mode-carta');
+        if (fmt) fmt.textContent = 'Carta (incluye Carnet)';
+      }
     }
 
     async function switchAndPrint(format) {

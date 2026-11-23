@@ -623,19 +623,31 @@ async function openPolicyModal(policy = null) {
     const nextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     document.getElementById('policyFechaInicio').value = today;
     document.getElementById('policyFechaFin').value = nextYear;
+    document.getElementById('policyId').value = '';
+    document.getElementById('policyTipoVehiculo').value = '';
+    document.getElementById('policyPlaca').value = '';
+    document.getElementById('policyMarca').value = '';
+    document.getElementById('policyModelo').value = '';
+    document.getElementById('policyAnio').value = '';
+    document.getElementById('policyColor').value = '';
+    document.getElementById('policySerial').value = '';
+    document.getElementById('policyClase').value = '';
+    document.getElementById('policyUso').value = '';
+    document.getElementById('policyNotas').value = '';
   }
 
   if (policy) {
     document.getElementById('policyId').value = policy.id;
     document.getElementById('policyClient').value = policy.client_id;
-    document.getElementById('policyTipoVehiculo').value = policy.tipo_vehiculo;
+    document.getElementById('policyTipoVehiculo').value = policy.tipo_vehiculo || '';
     document.getElementById('policyPlaca').value = policy.placa;
     document.getElementById('policyMarca').value = policy.marca;
     document.getElementById('policyModelo').value = policy.modelo;
     document.getElementById('policyAnio').value = policy.anio;
     document.getElementById('policyColor').value = policy.color || '';
     document.getElementById('policySerial').value = policy.serial_carroceria || '';
-    document.getElementById('policySerialMotor').value = policy.serial_motor || '';
+    document.getElementById('policyClase').value = policy.clase || policy.serial_motor || '';
+    document.getElementById('policyUso').value = policy.uso || '';
     document.getElementById('policyCobertura').value = policy.cobertura;
     document.getElementById('policyFechaInicio').value = toInputDate(policy.fecha_inicio);
     document.getElementById('policyFechaFin').value = toInputDate(policy.fecha_fin);
@@ -659,8 +671,8 @@ async function savePolicy(e) {
   const id = document.getElementById('policyId').value;
 
   if (id) {
-
     const body = {
+      tipo_vehiculo: document.getElementById('policyTipoVehiculo').value,
       cobertura: document.getElementById('policyCobertura').value,
       fecha_inicio: document.getElementById('policyFechaInicio').value,
       fecha_fin: document.getElementById('policyFechaFin').value,
@@ -671,7 +683,8 @@ async function savePolicy(e) {
       anio: Number(document.getElementById('policyAnio').value),
       color: document.getElementById('policyColor').value,
       serial_carroceria: document.getElementById('policySerial').value,
-      serial_motor: document.getElementById('policySerialMotor').value
+      clase: document.getElementById('policyClase').value,
+      uso: document.getElementById('policyUso').value
     };
 
     try {
@@ -692,7 +705,8 @@ async function savePolicy(e) {
       anio: Number(document.getElementById('policyAnio').value),
       color: document.getElementById('policyColor').value,
       serial_carroceria: document.getElementById('policySerial').value,
-      serial_motor: document.getElementById('policySerialMotor').value,
+      clase: document.getElementById('policyClase').value,
+      uso: document.getElementById('policyUso').value,
       cobertura: document.getElementById('policyCobertura').value,
       fecha_inicio: document.getElementById('policyFechaInicio').value,
       fecha_fin: document.getElementById('policyFechaFin').value,

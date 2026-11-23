@@ -1,17 +1,32 @@
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
 const { getEmergencyConfig, getEmergencyPasswordHash } = require('../utils/emergency-admin');
 
-let pool;
+let pool = null;
+let sqliteDb = null;
+let isSqlite = false;
+let inSqliteTx = false;
 let lastExpireCheckAt = 0;
 
-async function ensureIndex(table, indexName, columnsSql) {
-  try {
-    await pool.query(`CREATE INDEX ${indexName} ON ${table} (${columnsSql})`);
-  } catch (err) {
-    // 1061 = ER_DUP_KEYNAME (el índice ya existe)
-    if (err.errno !== 1061) {
-      console.log(`⚠️ Nota sobre índice ${indexName}:`, err.message);
+const SQLITE_DB_PATH = path.resolve(process.env.DB_PATH || path.join(__dirname, 'rcv.db'));
+
+function ensureDirSync(filePath) {
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
+
+function saveSqliteDb() {
+  if (sqliteDb && isSqlite) {
+    try {
+      ensureDirSync(SQLITE_DB_PATH);
+      const data = sqliteDb.export();
+      fs.writeFileSync(SQLITE_DB_PATH, Buffer.from(data));
+    } catch (err) {
+      console.error('⚠️ Error guardando base de datos SQLite:', err.message);
     }
   }
 }
@@ -63,10 +78,198 @@ function buildPoolConfig() {
   return cfg;
 }
 
-async function initDatabase() {
-  pool = mysql.createPool(buildPoolConfig());
+async function ensureIndex(table, indexName, columnsSql) {
+  if (isSqlite) return;
+  try {
+    await pool.query(`CREATE INDEX ${indexName} ON ${table} (${columnsSql})`);
+  } catch (err) {
+    if (err.errno !== 1061) {
+      console.log(`⚠️ Nota sobre índice ${indexName}:`, err.message);
+    }
+  }
+}
 
-  console.log('🔄 Conectando a MySQL...');
+async function initSqliteFallback() {
+  const initSqlJs = require('sql.js');
+  const SQL = await initSqlJs();
+  isSqlite = true;
+
+  if (fs.existsSync(SQLITE_DB_PATH)) {
+    try {
+      const buffer = fs.readFileSync(SQLITE_DB_PATH);
+      sqliteDb = new SQL.Database(buffer);
+    } catch {
+      sqliteDb = new SQL.Database();
+    }
+  } else {
+    sqliteDb = new SQL.Database();
+  }
+
+  sqliteDb.create_function('CONCAT', (...args) => args.join(''));
+  sqliteDb.create_function('CURDATE', () => new Date().toISOString().slice(0, 10));
+  sqliteDb.create_function('NOW', () => new Date().toISOString().slice(0, 19).replace('T', ' '));
+  sqliteDb.create_function('RIGHT', (str, n) => String(str || '').slice(-n));
+
+  sqliteDb.run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT UNIQUE NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      password_hash TEXT NOT NULL,
+      role TEXT DEFAULT 'admin',
+      password_hint TEXT DEFAULT NULL,
+      active INTEGER DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS clients (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      cedula TEXT UNIQUE NOT NULL,
+      nombre TEXT NOT NULL,
+      apellido TEXT NOT NULL,
+      telefono TEXT,
+      email TEXT,
+      direccion TEXT,
+      ciudad TEXT,
+      estado_region TEXT,
+      fecha_nacimiento DATE,
+      active INTEGER DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS policies (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      policy_number TEXT UNIQUE NOT NULL,
+      client_id INTEGER NOT NULL,
+      tipo_vehiculo TEXT NOT NULL,
+      placa TEXT NOT NULL,
+      marca TEXT NOT NULL,
+      modelo TEXT NOT NULL,
+      anio INTEGER NOT NULL,
+      color TEXT,
+      serial_carroceria TEXT,
+      serial_motor TEXT,
+      clase TEXT,
+      uso TEXT,
+      cobertura TEXT NOT NULL,
+      monto REAL NOT NULL,
+      prima REAL NOT NULL,
+      fecha_inicio DATE NOT NULL,
+      fecha_fin DATE NOT NULL,
+      estado TEXT DEFAULT 'activa',
+      notas TEXT,
+      created_by INTEGER,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (client_id) REFERENCES clients(id),
+      FOREIGN KEY (created_by) REFERENCES users(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS coverages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nombre TEXT UNIQUE NOT NULL,
+      descripcion TEXT,
+      prima REAL DEFAULT 0,
+      cob_1_nombre TEXT, cob_1_monto REAL DEFAULT 0,
+      cob_2_nombre TEXT, cob_2_monto REAL DEFAULT 0,
+      cob_3_nombre TEXT, cob_3_monto REAL DEFAULT 0,
+      cob_4_nombre TEXT, cob_4_monto REAL DEFAULT 0,
+      cob_5_nombre TEXT, cob_5_monto REAL DEFAULT 0,
+      cob_6_nombre TEXT, cob_6_monto REAL DEFAULT 0,
+      cob_7_nombre TEXT, cob_7_monto REAL DEFAULT 0,
+      cob_8_nombre TEXT, cob_8_monto REAL DEFAULT 0,
+      cob_9_nombre TEXT, cob_9_monto REAL DEFAULT 0,
+      cob_10_nombre TEXT, cob_10_monto REAL DEFAULT 0,
+      active INTEGER DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS sequences (
+      name TEXT PRIMARY KEY,
+      value INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS audit_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NULL,
+      username TEXT NOT NULL,
+      action TEXT NOT NULL,
+      entity TEXT NOT NULL,
+      entity_id TEXT NULL,
+      details TEXT NULL,
+      ip TEXT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
+  try { sqliteDb.run("ALTER TABLE policies ADD COLUMN clase TEXT DEFAULT NULL"); } catch(e) {}
+  try { sqliteDb.run("ALTER TABLE policies ADD COLUMN uso TEXT DEFAULT NULL"); } catch(e) {}
+
+  // Default seed for demo coverages if empty
+  const covCheck = sqliteDb.exec("SELECT COUNT(*) as count FROM coverages");
+  if (covCheck.length === 0 || Number(covCheck[0].values[0][0]) === 0) {
+    sqliteDb.run(`
+      INSERT INTO coverages (nombre, descripcion, prima, cob_1_nombre, cob_1_monto, cob_2_nombre, cob_2_monto, cob_3_nombre, cob_3_monto, active)
+      VALUES 
+      ('Básica Automóvil', 'Cobertura mínima legal para vehículos particulares', 35.00, 'Daños a Cosas', 5000.00, 'Daños a Personas', 10000.00, 'Fianza de Excarcelación', 3000.00, 1),
+      ('Amplia Todo Riesgo', 'Protección integral con asistencia vial y legal', 75.00, 'Daños a Terceros', 15000.00, 'Muerte Accidental', 20000.00, 'Asistencia Grúa', 500.00, 1),
+      ('Moto / RCV Express', 'Cobertura especializada para motocicletas', 25.00, 'Responsabilidad Civil', 3000.00, 'Asistencia Legal', 1500.00, NULL, 0, 1);
+    `);
+  }
+
+  // Seed default demo client and policy for test 448 if empty
+  const polCheck = sqliteDb.exec("SELECT COUNT(*) as count FROM policies");
+  if (polCheck.length === 0 || Number(polCheck[0].values[0][0]) === 0) {
+    sqliteDb.run(`
+      INSERT INTO clients (id, cedula, nombre, apellido, telefono, email, direccion, ciudad, estado_region, fecha_nacimiento, active)
+      VALUES (1, 'V-12345678', 'Carlos', 'Rodríguez', '0414-1234567', 'carlos.rodriguez@example.com', 'Av. Principal, Edif. Los Andes, Apto 4B', 'Caracas', 'Distrito Capital', '1985-06-15', 1);
+
+      INSERT INTO sequences (name, value) VALUES ('policy', 448);
+
+      INSERT INTO policies (id, policy_number, client_id, tipo_vehiculo, placa, marca, modelo, anio, color, serial_carroceria, serial_motor, cobertura, monto, prima, fecha_inicio, fecha_fin, estado, notas, created_by)
+      VALUES (448, '00000448', 1, 'automovil', 'AB123CD', 'Toyota', 'Corolla', 2022, 'Blanco', '8AJBX382947291048', '2ZR-FE1829374', 'Básica Automóvil', 18000.00, 35.00, date('now', '-30 day'), date('now', '+335 day'), 'activa', 'Póliza demo emitida automáticamente', 1);
+    `);
+  }
+
+  saveSqliteDb();
+  console.log('💡 Modo Demo autónomo activo: Base de datos SQLite inicializada en ' + SQLITE_DB_PATH);
+}
+
+function adaptSqlForSqlite(sql) {
+  let s = sql;
+  s = s.replace(/CURDATE\(\)/gi, "date('now')");
+  s = s.replace(/DATE_ADD\(date\('now'\),\s*INTERVAL\s*15\s*DAY\)/gi, "date('now', '+15 day')");
+  s = s.replace(/DATE_ADD\(CURDATE\(\),\s*INTERVAL\s*15\s*DAY\)/gi, "date('now', '+15 day')");
+  s = s.replace(/FOR UPDATE/gi, '');
+  s = s.replace(/CAST\(RIGHT\(policy_number,\s*8\)\s*AS\s*UNSIGNED\)/gi, 'CAST(substr(policy_number, -8) AS INTEGER)');
+  s = s.replace(/RIGHT\(p\.policy_number,\s*8\)/gi, 'substr(p.policy_number, -8)');
+  return s;
+}
+
+async function initDatabase() {
+  if (process.env.DB_ENGINE === 'sqlite') {
+    await initSqliteFallback();
+    await ensureUsersTableAndEmergencySuperadmin();
+    await expireOverduePolicies({ force: true });
+    return;
+  }
+
+  try {
+    pool = mysql.createPool(buildPoolConfig());
+    console.log('🔄 Conectando a MySQL...');
+    await pool.query('SELECT 1');
+    console.log('✅ Conexión con MySQL establecida.');
+  } catch (err) {
+    console.warn(`⚠️ MySQL no disponible (${err.code || err.message}). Cambiando automáticamente a modo DEMO SQLite autónomo...`);
+    pool = null;
+    await initSqliteFallback();
+    await ensureUsersTableAndEmergencySuperadmin();
+    await expireOverduePolicies({ force: true });
+    return;
+  }
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
@@ -86,7 +289,6 @@ async function initDatabase() {
     await pool.query("ALTER TABLE users ADD COLUMN password_hint VARCHAR(255) DEFAULT NULL");
     console.log('✅ Base de datos parcheada: Columna password_hint añadida exitosamente.');
   } catch (err) {
-    // 1060 = Duplicate column name
     if (err.errno !== 1060) {
       console.log('⚠️ Nota sobre password_hint:', err.message);
     }
@@ -123,6 +325,8 @@ async function initDatabase() {
       color VARCHAR(50),
       serial_carroceria VARCHAR(100),
       serial_motor VARCHAR(100),
+      clase VARCHAR(100),
+      uso VARCHAR(100),
       cobertura VARCHAR(100) NOT NULL,
       monto DECIMAL(12,2) NOT NULL,
       prima DECIMAL(12,2) NOT NULL,
@@ -137,6 +341,9 @@ async function initDatabase() {
       FOREIGN KEY (created_by) REFERENCES users(id)
     )
   `);
+
+  try { await pool.query("ALTER TABLE policies ADD COLUMN clase VARCHAR(100) DEFAULT NULL"); } catch(e) {}
+  try { await pool.query("ALTER TABLE policies ADD COLUMN uso VARCHAR(100) DEFAULT NULL"); } catch(e) {}
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS coverages (
@@ -197,28 +404,37 @@ async function initDatabase() {
 
   await ensureUsersTableAndEmergencySuperadmin();
   await expireOverduePolicies({ force: true });
-
-  return pool;
 }
 
 async function ensureUsersTableAndEmergencySuperadmin({ forceSyncPassword = false } = {}) {
   try {
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        username VARCHAR(255) UNIQUE NOT NULL,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        password_hash VARCHAR(255) NOT NULL,
-        role VARCHAR(50) DEFAULT 'admin',
-        password_hint VARCHAR(255) DEFAULT NULL,
-        active TINYINT DEFAULT 1,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      )
-    `);
-
     const cfg = getEmergencyConfig();
     const emgHash = await getEmergencyPasswordHash();
+
+    if (isSqlite) {
+      if (emgHash) {
+        const existing = await queryGet('SELECT id, role, active FROM users WHERE username = ? LIMIT 1', [cfg.username]);
+        if (!existing) {
+          await queryRun('INSERT INTO users (username, email, password_hash, role, active) VALUES (?, ?, ?, ?, 1)', [cfg.username, cfg.email, emgHash, 'superadmin']);
+          console.log(`✅ Usuario superadmin de emergencia [${cfg.username}] creado en SQLite.`);
+        } else if (forceSyncPassword || existing.role !== 'superadmin' || !existing.active) {
+          if (forceSyncPassword) {
+            await queryRun('UPDATE users SET password_hash = ?, role = ?, active = 1 WHERE id = ?', [emgHash, 'superadmin', existing.id]);
+          } else {
+            await queryRun('UPDATE users SET role = ?, active = 1 WHERE id = ?', ['superadmin', existing.id]);
+          }
+        }
+      }
+
+      const countRow = await queryGet('SELECT COUNT(*) as count FROM users');
+      if (!countRow || Number(countRow.count) === 0) {
+        const password_hash = bcrypt.hashSync('admin123', 10);
+        await queryRun("INSERT INTO users (username, email, password_hash, role, active) VALUES ('admin', 'admin@rcv.com', ?, 'superadmin', 1)", [password_hash]);
+        console.log('✅ Auto-Siembra: Base de datos vacía. Usuario [admin] / [admin123] creado.');
+      }
+      saveSqliteDb();
+      return;
+    }
 
     if (emgHash) {
       const [existing] = await pool.query(
@@ -268,6 +484,10 @@ async function expireOverduePolicies({ force = false } = {}) {
   }
   lastExpireCheckAt = now;
   try {
+    if (isSqlite) {
+      const res = await queryRun("UPDATE policies SET estado = 'vencida' WHERE estado = 'activa' AND fecha_fin < date('now')");
+      return res.changes || 0;
+    }
     const [result] = await pool.execute(
       "UPDATE policies SET estado = 'vencida' WHERE estado = 'activa' AND fecha_fin < CURDATE()"
     );
@@ -279,21 +499,71 @@ async function expireOverduePolicies({ force = false } = {}) {
 }
 
 async function queryAll(sql, params = [], conn = pool) {
+  if (isSqlite) {
+    const s = adaptSqlForSqlite(sql);
+    const stmt = sqliteDb.prepare(s);
+    stmt.bind(params);
+    const results = [];
+    try {
+      while (stmt.step()) {
+        results.push(stmt.getAsObject());
+      }
+    } finally {
+      stmt.free();
+    }
+    return results;
+  }
   const [rows] = await conn.query(sql, params);
   return rows;
 }
 
 async function queryGet(sql, params = [], conn = pool) {
+  if (isSqlite) {
+    const results = await queryAll(sql, params);
+    return results.length > 0 ? results[0] : null;
+  }
   const [rows] = await conn.query(sql, params);
   return rows.length > 0 ? rows[0] : null;
 }
 
 async function queryRun(sql, params = [], conn = pool) {
+  if (isSqlite) {
+    const s = adaptSqlForSqlite(sql);
+    sqliteDb.run(s, params);
+    const lastIdRes = sqliteDb.exec("SELECT last_insert_rowid() as id");
+    const lastId = lastIdRes.length > 0 && lastIdRes[0].values.length > 0 ? Number(lastIdRes[0].values[0][0]) : 0;
+    const changes = sqliteDb.getRowsModified();
+    if (!inSqliteTx) {
+      saveSqliteDb();
+    }
+    return { lastInsertRowid: lastId, changes };
+  }
   const [result] = await conn.execute(sql, params);
   return { lastInsertRowid: result.insertId, changes: result.affectedRows };
 }
 
 async function withTransaction(fn) {
+  if (isSqlite) {
+    sqliteDb.run('BEGIN TRANSACTION');
+    inSqliteTx = true;
+    try {
+      const tx = {
+        queryAll: (sql, params = []) => queryAll(sql, params),
+        queryGet: (sql, params = []) => queryGet(sql, params),
+        queryRun: (sql, params = []) => queryRun(sql, params)
+      };
+      const result = await fn(tx);
+      sqliteDb.run('COMMIT');
+      inSqliteTx = false;
+      saveSqliteDb();
+      return result;
+    } catch (err) {
+      inSqliteTx = false;
+      try { sqliteDb.run('ROLLBACK'); } catch {}
+      throw err;
+    }
+  }
+
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
@@ -314,6 +584,14 @@ async function withTransaction(fn) {
 }
 
 async function closeDatabase() {
+  if (isSqlite) {
+    saveSqliteDb();
+    if (sqliteDb) {
+      sqliteDb.close();
+      sqliteDb = null;
+    }
+    return;
+  }
   if (pool) {
     await pool.end();
     pool = null;

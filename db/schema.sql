@@ -43,6 +43,8 @@ CREATE TABLE IF NOT EXISTS policies (
   color VARCHAR(50),
   serial_carroceria VARCHAR(100),
   serial_motor VARCHAR(100),
+  clase VARCHAR(100),
+  uso VARCHAR(100),
   cobertura VARCHAR(100) NOT NULL,
   monto DECIMAL(12,2) NOT NULL,
   prima DECIMAL(12,2) NOT NULL,

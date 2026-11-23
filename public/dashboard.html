@@ -6,6 +6,7 @@
   <meta name="description" content="Panel de administración — Sistema RCV">
   <title>Dashboard — Sistema RCV</title>
   <link rel="stylesheet" href="/css/styles.css">
+  <script src="/js/theme.js"></script>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
 </head>
 <body>
@@ -59,6 +60,16 @@
       </nav>
 
       <div class="sidebar-footer">
+        <div class="theme-switch-container">
+          <div class="theme-switch-label">
+            <span class="theme-mode-icon">🌙</span>
+            <span class="theme-mode-text">Modo Oscuro</span>
+          </div>
+          <label class="theme-switch" title="Cambiar tema">
+            <input type="checkbox" class="theme-switch-checkbox" id="themeSwitchCheckbox" onchange="toggleTheme()">
+            <span class="theme-slider"></span>
+          </label>
+        </div>
         <div class="user-info">
           <div class="user-avatar" id="userAvatar">A</div>
           <div class="user-details">
@@ -444,21 +455,18 @@
               <option value="">Seleccione un cliente</option>
             </select>
           </div>
+          <div class="form-group">
+            <label for="policyTipoVehiculo">Tipo de Vehículo *</label>
+            <input type="text" id="policyTipoVehiculo" class="form-control" placeholder="Ej: Automóvil, Camioneta, Moto..." required>
+          </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="policyTipoVehiculo">Tipo de Vehículo *</label>
-              <select id="policyTipoVehiculo" class="form-control" required>
-                <option value="">Seleccione</option>
-                <option value="automovil">Automóvil</option>
-                <option value="camioneta">Camioneta</option>
-                <option value="moto">Moto</option>
-                <option value="camion">Camión</option>
-                <option value="bus">Bus</option>
-              </select>
+              <label for="policyClase">Clase</label>
+              <input type="text" id="policyClase" class="form-control" placeholder="Ej: Sedán, Coupé, Rústico, Paseo...">
             </div>
             <div class="form-group">
-              <label for="policyPlaca">Placa *</label>
-              <input type="text" id="policyPlaca" class="form-control" placeholder="ABC123" required>
+              <label for="policyUso">Uso</label>
+              <input type="text" id="policyUso" class="form-control" placeholder="Ej: Particular, Carga, Comercial...">
             </div>
           </div>
           <div class="form-row">
@@ -481,13 +489,15 @@
               <input type="text" id="policyColor" class="form-control" placeholder="Blanco, Negro...">
             </div>
           </div>
-          <div class="form-group">
-            <label for="policySerial">Serial de Carrocería</label>
-            <input type="text" id="policySerial" class="form-control" placeholder="Serial del vehículo">
-          </div>
-          <div class="form-group">
-            <label for="policySerialmotor">Serial de Motor</label>
-            <input type="text" id="policySerialMotor" class="form-control" placeholder="Serial del motor del vehículo">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="policySerial">Serial de Carrocería</label>
+              <input type="text" id="policySerial" class="form-control" placeholder="Serial de carrocería (VIN)">
+            </div>
+            <div class="form-group">
+              <label for="policyPlaca">Placa *</label>
+              <input type="text" id="policyPlaca" class="form-control" placeholder="ABC123" required>
+            </div>
           </div>
           <div class="form-group">
             <label for="policyCobertura">Cobertura *</label>

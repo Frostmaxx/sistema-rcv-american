@@ -83,7 +83,7 @@ router.get('/export', async (req, res) => {
     const rows = await queryAll(
       `SELECT p.policy_number, c.cedula AS client_cedula, CONCAT(c.nombre, ' ', c.apellido) AS client_name,
               c.telefono AS client_telefono, p.tipo_vehiculo, p.marca, p.modelo, p.anio, p.placa,
-              p.cobertura, p.prima, p.monto, p.fecha_inicio, p.fecha_fin, p.estado
+              p.clase, p.uso, p.cobertura, p.prima, p.monto, p.fecha_inicio, p.fecha_fin, p.estado
        FROM policies p JOIN clients c ON p.client_id = c.id${where}
        ORDER BY p.created_at DESC
        LIMIT 5000`,
@@ -92,7 +92,7 @@ router.get('/export', async (req, res) => {
 
     const headers = [
       'Nro Poliza', 'Documento ID', 'Cliente', 'Telefono', 'Tipo Vehiculo',
-      'Marca', 'Modelo', 'Anio', 'Placa', 'Cobertura', 'Prima EUR', 'Monto EUR',
+      'Marca', 'Modelo', 'Anio', 'Placa', 'Clase', 'Uso', 'Cobertura', 'Prima EUR', 'Monto EUR',
       'Fecha Inicio', 'Fecha Fin', 'Estado'
     ];
     const lines = [headers.map(csvCell).join(',')];
@@ -107,6 +107,8 @@ router.get('/export', async (req, res) => {
         r.modelo,
         r.anio,
         r.placa,
+        r.clase || '',
+        r.uso || '',
         r.cobertura,
         r.prima,
         r.monto,
@@ -185,7 +187,7 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const { client_id, tipo_vehiculo, placa, marca, modelo, anio, color, serial_carroceria, serial_motor, cobertura, fecha_inicio, fecha_fin, notas } = req.body;
+    const { client_id, tipo_vehiculo, placa, marca, modelo, anio, color, serial_carroceria, serial_motor, clase, uso, cobertura, fecha_inicio, fecha_fin, notas } = req.body;
 
     if (!client_id || !tipo_vehiculo || !placa || !marca || !modelo || !anio || !cobertura || !fecha_inicio || !fecha_fin) {
       return res.status(400).json({ error: 'Todos los campos obligatorios deben ser completados.' });
@@ -194,15 +196,17 @@ router.post('/', async (req, res) => {
     const client = await queryGet('SELECT id FROM clients WHERE id = ? AND active = 1', [client_id]);
     if (!client) return res.status(404).json({ error: 'Cliente no encontrado.' });
 
+    const finalClase = clase !== undefined ? clase : (serial_motor || null);
+    const finalUso = uso !== undefined ? uso : null;
     const createdBy = req.user && req.user.id > 0 ? req.user.id : null;
     const policy = await withTransaction(async (tx) => {
       const policy_number = await generatePolicyNumber(tx);
       const { prima, monto } = await getCoveragePricing(cobertura, tx);
 
       const result = await tx.queryRun(
-        `INSERT INTO policies (policy_number, client_id, tipo_vehiculo, placa, marca, modelo, anio, color, serial_carroceria, serial_motor, cobertura, monto, prima, fecha_inicio, fecha_fin, estado, notas, created_by)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'activa', ?, ?)`,
-        [policy_number, client_id, tipo_vehiculo, String(placa).toUpperCase(), marca, modelo, anio, color || null, serial_carroceria || null, serial_motor || null, cobertura, monto, prima, fecha_inicio, fecha_fin, notas || null, createdBy]
+        `INSERT INTO policies (policy_number, client_id, tipo_vehiculo, placa, marca, modelo, anio, color, serial_carroceria, serial_motor, clase, uso, cobertura, monto, prima, fecha_inicio, fecha_fin, estado, notas, created_by)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'activa', ?, ?)`,
+        [policy_number, client_id, tipo_vehiculo, String(placa).toUpperCase(), marca, modelo, anio, color || null, serial_carroceria || null, serial_motor || null, finalClase, finalUso, cobertura, monto, prima, fecha_inicio, fecha_fin, notas || null, createdBy]
       );
 
       return tx.queryGet('SELECT * FROM policies WHERE id = ?', [result.lastInsertRowid]);
@@ -226,7 +230,7 @@ router.put('/:id', async (req, res) => {
     const policy = await queryGet('SELECT * FROM policies WHERE id = ?', [policyId]);
     if (!policy) return res.status(404).json({ error: 'Póliza no encontrada.' });
 
-    const { estado, notas, cobertura, fecha_inicio, fecha_fin, placa, marca, modelo, anio, color, serial_carroceria, serial_motor } = req.body;
+    const { estado, notas, cobertura, fecha_inicio, fecha_fin, tipo_vehiculo, placa, marca, modelo, anio, color, serial_carroceria, serial_motor, clase, uso } = req.body;
 
     let newPrima = policy.prima;
     let newMonto = policy.monto;
@@ -238,18 +242,27 @@ router.put('/:id', async (req, res) => {
       }
     }
 
+    const finalClase = clase !== undefined ? clase : (serial_motor !== undefined ? serial_motor : policy.clase);
+    const finalUso = uso !== undefined ? uso : policy.uso;
+
     await queryRun(
       `UPDATE policies SET 
         estado = ?, notas = ?, cobertura = ?, fecha_inicio = ?, fecha_fin = ?, prima = ?, monto = ?,
-        placa = ?, marca = ?, modelo = ?, anio = ?, color = ?, serial_carroceria = ?, serial_motor = ?
+        tipo_vehiculo = ?, placa = ?, marca = ?, modelo = ?, anio = ?, color = ?, serial_carroceria = ?, serial_motor = ?,
+        clase = ?, uso = ?
       WHERE id = ?`,
       [
         estado || policy.estado, notas !== undefined ? notas : policy.notas, cobertura || policy.cobertura,
         fecha_inicio || policy.fecha_inicio, fecha_fin || policy.fecha_fin,
-        newPrima, newMonto, placa ? String(placa).toUpperCase() : policy.placa, marca || policy.marca, modelo || policy.modelo,
+        newPrima, newMonto,
+        tipo_vehiculo !== undefined ? tipo_vehiculo : policy.tipo_vehiculo,
+        placa ? String(placa).toUpperCase() : policy.placa, marca || policy.marca, modelo || policy.modelo,
         anio || policy.anio, color !== undefined ? color : policy.color,
         serial_carroceria !== undefined ? serial_carroceria : policy.serial_carroceria,
-        serial_motor !== undefined ? serial_motor : policy.serial_motor, policyId
+        serial_motor !== undefined ? serial_motor : policy.serial_motor,
+        finalClase,
+        finalUso,
+        policyId
       ]
     );
 

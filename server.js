@@ -50,7 +50,7 @@ async function startServer() {
       }
 
       const selectSql = `SELECT p.id, p.policy_number, p.tipo_vehiculo, p.placa, p.marca, p.modelo, p.anio, p.color,
-                p.serial_carroceria, p.serial_motor, p.cobertura, p.monto, p.prima,
+                p.serial_carroceria, p.serial_motor, p.clase, p.uso, p.cobertura, p.monto, p.prima,
                 p.fecha_inicio, p.fecha_fin, p.estado, p.created_at,
                 CONCAT(c.nombre, ' ', c.apellido) as client_name,
                 c.cedula as client_cedula, c.telefono as client_telefono, c.direccion as client_direccion

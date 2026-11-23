@@ -2,9 +2,9 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 
 function getEmergencyConfig() {
-  const username = (process.env.EMERGENCY_SUPERADMIN_USER || 'superadmin').trim();
-  const email = (process.env.EMERGENCY_SUPERADMIN_EMAIL || 'superadmin@rcv.local').trim();
-  const password = process.env.EMERGENCY_SUPERADMIN_PASSWORD || '';
+  const username = (process.env.EMERGENCY_SUPERADMIN_USER || process.env.EMERGENCY_USERNAME || 'superadmin').trim();
+  const email = (process.env.EMERGENCY_SUPERADMIN_EMAIL || process.env.EMERGENCY_EMAIL || 'superadmin@rcv.local').trim();
+  const password = process.env.EMERGENCY_SUPERADMIN_PASSWORD || process.env.EMERGENCY_PASSWORD || '';
   const passwordHash = process.env.EMERGENCY_SUPERADMIN_PASSWORD_HASH || '';
 
   return { username, email, password, passwordHash };
