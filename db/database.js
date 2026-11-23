@@ -34,12 +34,14 @@ function saveSqliteDb() {
 function buildPoolConfig() {
   const connectionLimit = Math.max(2, Number(process.env.DB_CONNECTION_LIMIT) || 10);
   const base = {
+    host: process.env.DB_HOST || 'localhost',
+    port: Number(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'rcv_db',
     waitForConnections: true,
     connectionLimit,
-    queueLimit: 0,
-    enableKeepAlive: true,
-    keepAliveInitialDelay: 10000,
-    charset: 'utf8mb4'
+    queueLimit: 0
   };
 
   const urlRaw = (process.env.DATABASE_URL || process.env.MYSQL_URL || '').trim();
@@ -59,14 +61,7 @@ function buildPoolConfig() {
     const sslParam = (parsed.searchParams.get('ssl') || parsed.searchParams.get('ssl-mode') || '').toLowerCase();
     sslFromUrl = sslParam === 'true' || sslParam === 'required' || sslParam === 'verify_ca' || sslParam === 'verify_identity';
   } else {
-    cfg = {
-      ...base,
-      host: process.env.DB_HOST || 'localhost',
-      port: Number(process.env.DB_PORT) || 3306,
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      database: process.env.DB_NAME || 'rcv_db'
-    };
+    cfg = base;
   }
 
   if (sslFromUrl || String(process.env.DB_SSL || '').toLowerCase() === 'true') {
@@ -263,6 +258,10 @@ async function initDatabase() {
     await pool.query('SELECT 1');
     console.log('✅ Conexión con MySQL establecida.');
   } catch (err) {
+    if (process.env.NODE_ENV === 'production' && process.env.DB_ENGINE !== 'sqlite') {
+      console.error(`❌ Error conectando a MySQL (${err.code || err.message}). Verifique credenciales DB_USER/DB_PASSWORD/DB_NAME en .env`);
+      throw err;
+    }
     console.warn(`⚠️ MySQL no disponible (${err.code || err.message}). Cambiando automáticamente a modo DEMO SQLite autónomo...`);
     pool = null;
     await initSqliteFallback();
