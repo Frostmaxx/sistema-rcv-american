@@ -583,6 +583,128 @@ async function exportPoliciesCsv() {
   }
 }
 
+function toggleVehicleNewField(field) {
+  const isClase = field === 'clase';
+  const isTipo = field === 'tipo';
+  const checkId = isClase ? 'policyClaseNewCheck' : (isTipo ? 'policyTipoVehiculoNewCheck' : 'policyUsoNewCheck');
+  const selId = isClase ? 'policyClaseSelect' : (isTipo ? 'policyTipoVehiculoSelect' : 'policyUsoSelect');
+  const inpId = isClase ? 'policyClaseNewInput' : (isTipo ? 'policyTipoVehiculoNewInput' : 'policyUsoNewInput');
+
+  const chk = document.getElementById(checkId);
+  const sel = document.getElementById(selId);
+  const inp = document.getElementById(inpId);
+  if (!chk || !sel || !inp) return;
+
+  if (chk.checked) {
+    inp.style.display = 'block';
+    sel.disabled = true;
+    sel.style.opacity = '0.6';
+    if (isTipo) {
+      sel.removeAttribute('required');
+      inp.setAttribute('required', 'required');
+    }
+    inp.focus();
+  } else {
+    inp.style.display = 'none';
+    inp.value = '';
+    sel.disabled = false;
+    sel.style.opacity = '1';
+    if (isTipo) {
+      inp.removeAttribute('required');
+      sel.setAttribute('required', 'required');
+    }
+  }
+  syncVehicleHiddenField(field);
+}
+
+function syncVehicleHiddenField(field) {
+  const isClase = field === 'clase';
+  const isTipo = field === 'tipo';
+  const checkId = isClase ? 'policyClaseNewCheck' : (isTipo ? 'policyTipoVehiculoNewCheck' : 'policyUsoNewCheck');
+  const selId = isClase ? 'policyClaseSelect' : (isTipo ? 'policyTipoVehiculoSelect' : 'policyUsoSelect');
+  const inpId = isClase ? 'policyClaseNewInput' : (isTipo ? 'policyTipoVehiculoNewInput' : 'policyUsoNewInput');
+  const hidId = isClase ? 'policyClase' : (isTipo ? 'policyTipoVehiculo' : 'policyUso');
+
+  const chk = document.getElementById(checkId);
+  const sel = document.getElementById(selId);
+  const inp = document.getElementById(inpId);
+  const hid = document.getElementById(hidId);
+  if (!hid) return;
+
+  const val = (chk && chk.checked) ? (inp ? inp.value.trim() : '') : (sel ? sel.value.trim() : '');
+  hid.value = val;
+}
+
+function setVehicleFieldValue(field, val) {
+  const norm = String(val || '').trim();
+  const isClase = field === 'clase';
+  const isTipo = field === 'tipo';
+  const checkId = isClase ? 'policyClaseNewCheck' : (isTipo ? 'policyTipoVehiculoNewCheck' : 'policyUsoNewCheck');
+  const selId = isClase ? 'policyClaseSelect' : (isTipo ? 'policyTipoVehiculoSelect' : 'policyUsoSelect');
+  const inpId = isClase ? 'policyClaseNewInput' : (isTipo ? 'policyTipoVehiculoNewInput' : 'policyUsoNewInput');
+  const hidId = isClase ? 'policyClase' : (isTipo ? 'policyTipoVehiculo' : 'policyUso');
+
+  const chk = document.getElementById(checkId);
+  const sel = document.getElementById(selId);
+  const inp = document.getElementById(inpId);
+  const hid = document.getElementById(hidId);
+
+  if (!sel || !chk || !inp || !hid) return;
+  hid.value = norm;
+
+  if (!norm) {
+    chk.checked = false;
+    inp.style.display = 'none';
+    inp.value = '';
+    sel.disabled = false;
+    sel.style.opacity = '1';
+    sel.value = '';
+    if (isTipo) {
+      sel.setAttribute('required', 'required');
+      inp.removeAttribute('required');
+    }
+    return;
+  }
+
+  const normClean = norm.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  let foundIndex = -1;
+  for (let i = 0; i < sel.options.length; i++) {
+    const optClean = sel.options[i].value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (optClean && optClean === normClean) {
+      foundIndex = i;
+      break;
+    }
+  }
+
+  if (foundIndex >= 0) {
+    sel.selectedIndex = foundIndex;
+    chk.checked = false;
+    inp.style.display = 'none';
+    inp.value = '';
+    sel.disabled = false;
+    sel.style.opacity = '1';
+    if (isTipo) {
+      sel.setAttribute('required', 'required');
+      inp.removeAttribute('required');
+    }
+  } else {
+    chk.checked = true;
+    inp.style.display = 'block';
+    inp.value = norm;
+    sel.disabled = true;
+    sel.style.opacity = '0.6';
+    sel.value = '';
+    if (isTipo) {
+      sel.removeAttribute('required');
+      inp.setAttribute('required', 'required');
+    }
+  }
+}
+
+window.toggleVehicleNewField = toggleVehicleNewField;
+window.syncVehicleHiddenField = syncVehicleHiddenField;
+window.setVehicleFieldValue = setVehicleFieldValue;
+
 async function openPolicyModal(policy = null) {
   document.getElementById('policyForm').reset();
   document.getElementById('policyId').value = '';
@@ -624,30 +746,30 @@ async function openPolicyModal(policy = null) {
     document.getElementById('policyFechaInicio').value = today;
     document.getElementById('policyFechaFin').value = nextYear;
     document.getElementById('policyId').value = '';
-    document.getElementById('policyTipoVehiculo').value = '';
     document.getElementById('policyPlaca').value = '';
     document.getElementById('policyMarca').value = '';
     document.getElementById('policyModelo').value = '';
     document.getElementById('policyAnio').value = '';
     document.getElementById('policyColor').value = '';
     document.getElementById('policySerial').value = '';
-    document.getElementById('policyClase').value = '';
-    document.getElementById('policyUso').value = '';
     document.getElementById('policyNotas').value = '';
+    setVehicleFieldValue('clase', '');
+    setVehicleFieldValue('tipo', '');
+    setVehicleFieldValue('uso', '');
   }
 
   if (policy) {
     document.getElementById('policyId').value = policy.id;
     document.getElementById('policyClient').value = policy.client_id;
-    document.getElementById('policyTipoVehiculo').value = policy.tipo_vehiculo || '';
     document.getElementById('policyPlaca').value = policy.placa;
     document.getElementById('policyMarca').value = policy.marca;
     document.getElementById('policyModelo').value = policy.modelo;
     document.getElementById('policyAnio').value = policy.anio;
     document.getElementById('policyColor').value = policy.color || '';
     document.getElementById('policySerial').value = policy.serial_carroceria || '';
-    document.getElementById('policyClase').value = policy.clase || policy.serial_motor || '';
-    document.getElementById('policyUso').value = policy.uso || '';
+    setVehicleFieldValue('clase', policy.clase || policy.serial_motor || '');
+    setVehicleFieldValue('tipo', policy.tipo_vehiculo || '');
+    setVehicleFieldValue('uso', policy.uso || '');
     document.getElementById('policyCobertura').value = policy.cobertura;
     document.getElementById('policyFechaInicio').value = toInputDate(policy.fecha_inicio);
     document.getElementById('policyFechaFin').value = toInputDate(policy.fecha_fin);
@@ -668,6 +790,22 @@ async function editPolicy(id) {
 
 async function savePolicy(e) {
   e.preventDefault();
+  syncVehicleHiddenField('clase');
+  syncVehicleHiddenField('tipo');
+  syncVehicleHiddenField('uso');
+
+  const tipoVal = document.getElementById('policyTipoVehiculo').value.trim();
+  if (!tipoVal) {
+    showToast('El campo Tipo de vehículo es obligatorio', 'error');
+    const chk = document.getElementById('policyTipoVehiculoNewCheck');
+    if (chk && chk.checked) {
+      document.getElementById('policyTipoVehiculoNewInput').focus();
+    } else {
+      document.getElementById('policyTipoVehiculoSelect').focus();
+    }
+    return;
+  }
+
   const id = document.getElementById('policyId').value;
 
   if (id) {

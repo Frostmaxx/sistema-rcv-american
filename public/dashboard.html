@@ -7,8 +7,8 @@
   <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet">
   <meta name="description" content="Panel de administración — Sistema RCV">
   <title>Dashboard — Sistema RCV</title>
-  <link rel="stylesheet" href="/css/styles.css?v=2.4.2">
-  <script src="/js/theme.js?v=2.4.2"></script>
+  <link rel="stylesheet" href="/css/styles.css?v=2.4.3">
+  <script src="/js/theme.js?v=2.4.3"></script>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
 </head>
 <body>
@@ -465,17 +465,86 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="policyClase">Clase</label>
-            <input type="text" id="policyClase" class="form-control" placeholder="Ej: Automóvil, Camioneta, Moto...">
+            <label for="policyClaseSelect">Clase</label>
+            <select id="policyClaseSelect" class="form-control" onchange="syncVehicleHiddenField('clase')">
+              <option value="">Seleccione clase</option>
+              <option value="Automóvil">Automóvil</option>
+              <option value="Camioneta">Camioneta</option>
+              <option value="Rústico">Rústico</option>
+              <option value="Moto">Moto</option>
+              <option value="Camión">Camión</option>
+              <option value="Autobús">Autobús</option>
+              <option value="Minibús">Minibús</option>
+              <option value="Pick-up">Pick-up</option>
+              <option value="Panel / Furgón">Panel / Furgón</option>
+              <option value="Remolque">Remolque</option>
+              <option value="Chuto / Gandola">Chuto / Gandola</option>
+              <option value="Maquinaria">Maquinaria</option>
+            </select>
+            <div class="vehicle-field-new-group">
+              <label class="vehicle-field-new-check">
+                <input type="checkbox" id="policyClaseNewCheck" onchange="toggleVehicleNewField('clase')">
+                <span>Nuevo</span>
+              </label>
+              <input type="text" id="policyClaseNewInput" class="form-control vehicle-field-new-input" placeholder="Escriba nueva clase..." style="display: none;" oninput="syncVehicleHiddenField('clase')">
+            </div>
+            <input type="hidden" id="policyClase">
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="policyTipoVehiculo">Tipo *</label>
-              <input type="text" id="policyTipoVehiculo" class="form-control" placeholder="Ej: Sedán, Coupé, Rústico, Paseo..." required>
+              <label for="policyTipoVehiculoSelect">Tipo *</label>
+              <select id="policyTipoVehiculoSelect" class="form-control" required onchange="syncVehicleHiddenField('tipo')">
+                <option value="">Seleccione tipo</option>
+                <option value="Sedán">Sedán</option>
+                <option value="Coupé">Coupé</option>
+                <option value="Hatchback">Hatchback</option>
+                <option value="Station Wagon">Station Wagon</option>
+                <option value="Paseo">Paseo</option>
+                <option value="Sport Wagon">Sport Wagon</option>
+                <option value="Chasis">Chasis</option>
+                <option value="Plataforma">Plataforma</option>
+                <option value="Estacas">Estacas</option>
+                <option value="Volteo">Volteo</option>
+                <option value="Cisterna">Cisterna</option>
+                <option value="Cava">Cava</option>
+                <option value="Furgón">Furgón</option>
+                <option value="Pick-up">Pick-up</option>
+                <option value="Automóvil">Automóvil</option>
+                <option value="Camioneta">Camioneta</option>
+                <option value="Moto">Moto</option>
+                <option value="Camión">Camión</option>
+                <option value="Bus">Bus</option>
+              </select>
+              <div class="vehicle-field-new-group">
+                <label class="vehicle-field-new-check">
+                  <input type="checkbox" id="policyTipoVehiculoNewCheck" onchange="toggleVehicleNewField('tipo')">
+                  <span>Nuevo</span>
+                </label>
+                <input type="text" id="policyTipoVehiculoNewInput" class="form-control vehicle-field-new-input" placeholder="Escriba nuevo tipo..." style="display: none;" oninput="syncVehicleHiddenField('tipo')">
+              </div>
+              <input type="hidden" id="policyTipoVehiculo">
             </div>
             <div class="form-group">
-              <label for="policyUso">Uso</label>
-              <input type="text" id="policyUso" class="form-control" placeholder="Ej: Particular, Carga, Comercial...">
+              <label for="policyUsoSelect">Uso</label>
+              <select id="policyUsoSelect" class="form-control" onchange="syncVehicleHiddenField('uso')">
+                <option value="">Seleccione uso</option>
+                <option value="Particular">Particular</option>
+                <option value="Comercial">Comercial</option>
+                <option value="Carga">Carga</option>
+                <option value="Transporte Público">Transporte Público</option>
+                <option value="Oficial">Oficial</option>
+                <option value="Alquiler">Alquiler</option>
+                <option value="Escolar">Escolar</option>
+                <option value="Turístico">Turístico</option>
+              </select>
+              <div class="vehicle-field-new-group">
+                <label class="vehicle-field-new-check">
+                  <input type="checkbox" id="policyUsoNewCheck" onchange="toggleVehicleNewField('uso')">
+                  <span>Nuevo</span>
+                </label>
+                <input type="text" id="policyUsoNewInput" class="form-control vehicle-field-new-input" placeholder="Escriba nuevo uso..." style="display: none;" oninput="syncVehicleHiddenField('uso')">
+              </div>
+              <input type="hidden" id="policyUso">
             </div>
           </div>
           <div class="form-row">
@@ -628,7 +697,7 @@
 
   <div class="toast-container" id="toastContainer"></div>
 
-  <script src="/js/legal-config.js?v=2.4.2"></script>
-  <script src="/js/dashboard.js?v=2.4.2"></script>
+  <script src="/js/legal-config.js?v=2.4.3"></script>
+  <script src="/js/dashboard.js?v=2.4.3"></script>
 </body>
 </html>
