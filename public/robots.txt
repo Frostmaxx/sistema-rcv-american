@@ -1,0 +1,3 @@
+# Deslistar todo el sitio de rastreadores y motores de búsqueda
+User-agent: *
+Disallow: /

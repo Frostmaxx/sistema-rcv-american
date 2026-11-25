@@ -7,8 +7,26 @@ const { signPolicyVerification, verifyPolicySignature } = require('../utils/qr-s
 const { createRateLimiter } = require('../utils/rate-limiter');
 const { extractCoverageItems } = require('../utils/coverages');
 const { verifyEmergencyCredentials, getEmergencyConfig } = require('../utils/emergency-admin');
+const { securityHeaders } = require('../middleware/security');
 
 const BASE = process.env.TEST_BASE_URL || `http://127.0.0.1:${process.env.PORT || 4000}`;
+
+test('securityHeaders sets X-Robots-Tag to block search engine indexing', () => {
+  const headers = {};
+  const req = { secure: false, headers: {} };
+  const res = {
+    setHeader(key, val) {
+      headers[key.toLowerCase()] = val;
+    }
+  };
+  let nextCalled = false;
+  securityHeaders(req, res, () => { nextCalled = true; });
+
+  assert.equal(nextCalled, true);
+  assert.equal(headers['x-robots-tag'], 'noindex, nofollow, noarchive, nosnippet');
+  assert.equal(headers['x-content-type-options'], 'nosniff');
+  assert.equal(headers['x-frame-options'], 'DENY');
+});
 
 test('QR HMAC signature verifies valid, rejects tampered, allows legacy', () => {
   const sig = signPolicyVerification('00000422');
