@@ -2193,6 +2193,39 @@ body {
   height: 36px;
 }
 
+.app-version-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 999px;
+  line-height: 1.2;
+}
+
+[data-theme="light"] .app-version-badge {
+  color: #4f46e5;
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+
+.auth-logo .app-version-badge {
+  margin-top: 0.45rem;
+  margin-bottom: 0.35rem;
+}
+
+.sidebar-header .brand .app-version-badge {
+  margin-top: 0.2rem;
+  margin-bottom: 0.1rem;
+}
+
+
 
 
 

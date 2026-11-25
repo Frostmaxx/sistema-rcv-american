@@ -15,7 +15,15 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # Cambiar al directorio de la app
-cd ~/app_rcv || { echo -e "${RED}Error: No se encontró el directorio app_rcv${NC}"; exit 1; }
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TARGET_DIR="${1:-$SCRIPT_DIR}"
+if [ -d "$TARGET_DIR" ]; then
+    cd "$TARGET_DIR" || exit 1
+elif [ -d "$HOME/app_rcv" ]; then
+    cd "$HOME/app_rcv" || exit 1
+else
+    echo -e "${RED}Error: No se encontró el directorio de la aplicación${NC}"; exit 1;
+fi
 
 echo -e "${GREEN}1. Verificando archivos de configuración...${NC}"
 if [ ! -f ".env" ]; then

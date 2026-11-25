@@ -83,7 +83,7 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign(
           { id: user.id, username: user.username, role: user.role },
           getJwtSecret(),
-          { expiresIn: '12h' }
+          { expiresIn: process.env.JWT_EXPIRES_IN || '12h' }
         );
         await logAudit({ userId: user.id, username: user.username, action: 'LOGIN', entity: 'auth', req });
         return res.json({ token, user: { id: user.id, username: user.username, role: user.role } });
@@ -93,7 +93,7 @@ router.post('/login', async (req, res) => {
     const emergencyUser = await tryEmergencyFallback(cleanUser, password, req);
     if (emergencyUser) {
       loginRateLimiter.resetKey(rateKey);
-      const token = jwt.sign(emergencyUser, getJwtSecret(), { expiresIn: '12h' });
+      const token = jwt.sign(emergencyUser, getJwtSecret(), { expiresIn: process.env.JWT_EXPIRES_IN || '12h' });
       return res.json({ token, user: emergencyUser });
     }
 
